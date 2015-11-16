@@ -1,0 +1,22 @@
+{
+  "name": "mapivor",
+  "version": "1.0.0",
+  "description": "map-based experiments",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gaubert/mapivor.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/gaubert/mapivor/issues"
+  },
+  "homepage": "https://github.com/gaubert/mapivor#readme",
+  "dependencies": {
+    "wms-capabilities": "^0.3.0"
+  }
+}
