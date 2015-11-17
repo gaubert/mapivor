@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/gaubert/mapivor#readme",
   "dependencies": {
+    "express": "^4.13.3",
     "wms-capabilities": "^0.3.0"
   }
 }

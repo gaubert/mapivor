@@ -4,18 +4,46 @@
   //  layers: 'meteosat:natural, 'bkg-raster:bkg-raster'],
 
   // read info from getCapabilities
+  var getCapabilitiesUrl = 'http://eumetview.eumetsat.int/geoserver/wms?service=wms&version=1.3.0&request=GetCapabilities';
   var WMSCapabilities = require('wms-capabilities');
-  fs = require('fs');
+  //var jquery = require('jquery');
+  //fs = require('browserify-fs');
 
-  fs.readFile('getCapabilities.xml', 'utf8', function (err,xmlString) {
-  if (err) {
-    return console.log(err);
-  }
+  //fs.readFile(getCapabilitiesFilename, 'utf8', function (err,xmlString) {
+  //if (err) {
+  //  return console.log(err);
+  //}
 
-  var jsonString = new WMSCapabilities(xmlString).toJSON();
-  console.log(jsonString);
-
+  var getXMLRequest = $.ajax({
+     url: getCapabilitiesUrl,
+     contentType: "text/xml"
   });
+
+  getXMLRequest.done(function(data)
+  {
+    console.log(data);
+    var xml;
+    if (typeof data == "string")
+    {
+        xml = new ActiveXObject("Microsoft.XMLDOM");
+        xml.async = false;
+        xml.loadXML(data);
+    }
+    else
+    {
+        xml = data;
+    }
+    // Returned data available in object "xml"
+  });
+
+  getXMLRequest.fail(function(jqXHR, textStatus)
+  {
+     //console.log( "Ajax request failed... (" + textStatus + ' - ' + jqXHR.responseText ")." );
+     console.log("Ajax request failed... (" + textStatus + ").");
+  });
+
+  //var jsonString = new WMSCapabilities(xmlString).toJSON();
+  //console.log(jsonString);
 
   var crs = L.CRS.EPSG4326;
   var imageFormat  = 'image/png8';
