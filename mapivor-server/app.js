@@ -1,7 +1,8 @@
 var http = require('http');
 var express = require('express');
 var fs = require('fs');
-
+var DOMParser = global.DOMParser = require('xmldom').DOMParser;
+var WMSCapabilities = require('wms-capabilities');
 
 var app = express();
 
@@ -43,9 +44,12 @@ app.get('/wms-get-capability', function (req, res) {
 
     //the whole response has been recieved, so we just print it out here
     response.on('end', function () {
-      console.log(str);
-      //send back result via http
-      res.send(str);
+      
+      var parseString = require('xml2js').parseString;
+      parseString(str, function (err, result) {
+         console.log(result);
+         res.send(result);
+      });
     });
   }
 

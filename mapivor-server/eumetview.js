@@ -10,25 +10,27 @@
 
   var getXMLRequest = $.ajax({
      url: getCapabilitiesUrl,
-     headers: {"Origin": "localhost"},
      contentType: "text/xml"
   });
 
-  getXMLRequest.done(function(data)
+  var jsonString = null;
+
+  getXMLRequest.done(function(jsonStr)
   {
-    console.log(data);
-    var xml;
-    if (typeof data == "string")
+    console.log(jsonStr);
+    if (typeof jsonStr == "string")
     {
-        xml = new ActiveXObject("Microsoft.XMLDOM");
-        xml.async = false;
-        xml.loadXML(data);
+       jsonString = jsonStr;
+       //console.log(jsonString);
+       var jsonPath = require('JSONPath');
+       var t = jsonPath.eval(jsonString, "$.Layer..CRS");
+       console.log("BEfore the layers" + t);
     }
     else
     {
-        xml = data;
+        //xml = data;
+        console.log("need to handle that error");
     }
-    // Returned data available in object "xml"
   });
 
   getXMLRequest.fail(function(jqXHR, textStatus)
