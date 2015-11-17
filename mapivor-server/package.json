@@ -1,0 +1,14 @@
+{
+  "name": "mapivor-server",
+  "version": "0.0.0",
+  "description": "a simple server side in node js",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.13.3"
+  }
+}
