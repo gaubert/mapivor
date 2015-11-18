@@ -5,13 +5,18 @@
 
   // read info from getCapabilities
   //var getCapabilitiesUrl = 'http://eumetview.eumetsat.int/geoserver/wms?service=wms&version=1.3.0&request=GetCapabilities';
-  var getCapabilitiesUrl = 'http://localhost:3000/wms-get-capability';
-  var WMSCapabilities = require('wms-capabilities');
+ var isDefined = function isDefined(x) {
+    var undefined;
+    return x !== undefined;
+};
 
+  var getCapabilitiesUrl = 'http://localhost:3000/wms-get-capability';
+  
   var getXMLRequest = $.ajax({
      url: getCapabilitiesUrl,
      contentType: "text/xml"
   });
+
 
   var jsonString = null;
 
@@ -22,13 +27,29 @@
     {
        // json string to json object
        var jsonObj = $.parseJSON(jsonStr);
-       //console.log(jsonString);
+      
+       //use jsonPath to access the object
        var jsonPath = require('JSONPath');
-       var result = jsonPath.eval(jsonObj, "$..Layer.Layer[2]");
-       console.log("jspnPath:" + JSON.stringify(result));
-       //console.log("jsonObj:" + JSON.stringify(jsonObj["WMS_Capabilities"]["Capability"]["Layer"]["Layer"]));
-       
-       draw_map(jsonObj);
+       var result = jsonPath.eval(jsonObj, "$..Layer.Layer");
+
+        var info = {};
+        $.each(result[0], function(index, val) {
+
+        	var name = val.Name;
+        	var keys = Object.keys(val);
+        	var dim  = val.Dimension;
+        	var time = "";
+        	if (isDefined(val.Dimension))
+        	{
+        		time = val.Dimension["_"].split(",");
+        		//console.log("time" + time);
+  			}
+        	//console.log("Val -------" + name + "------" + JSON.stringify(time) + "----------" + JSON.stringify(val));
+        	console.log("Name: " + val.Name + " latest time:" + time[time.length - 1]);
+        	info[val.Name] = time[time.length - 1];
+  		});
+
+       draw_map(info);
     }
     else
     {
@@ -46,13 +67,15 @@
   //var jsonString = new WMSCapabilities(xmlString).toJSON();
   //console.log(jsonString);
 
-  function draw_map(capObj)
+  function draw_map(info)
   {
 
 	  var crs = L.CRS.EPSG4326;
 	  var imageFormat  = 'image/png8';
 	  var transparency = 'true';
 	  var time = '2015-11-13T10:15:00.000Z';
+
+	  console.log("info " + info);
 
 	  // backgound layer
 	  var bkgLayer = L.tileLayer.wms("http://eumetview.eumetsat.int/geoserv/wms", {
@@ -82,7 +105,7 @@
 		transparent: true,
 		version: '1.3.0',
 		crs: crs,
-		time: time,
+		time: info['meteosat:natural'],
 		attribution: "EUMETSAT 2015"
 	  });
 
@@ -92,7 +115,7 @@
 		transparent: true,
 		version: '1.3.0',
 		crs: crs,
-		time: time,
+		time: info['meteosat:airmass'],
 		attribution: "EUMETSAT 2015"
 	  });
 
@@ -103,7 +126,7 @@
 		transparent: true,
 		version: '1.3.0',
 		crs: crs,
-		time: time,
+		time: info['meteosat:dust'],
 		attribution: "EUMETSAT 2015"
 	  });
 

@@ -1,27 +1,44 @@
 
-exports.answer = 42;
 
-// make a better more user friendly Json from xml
+/**
+ * isDefined check if an object exist
+ * @param  {[type]}
+ * @return {Boolean}
+ */
+exports.isDefined = function isDefined(x) {
+    var undefined;
+    return x !== undefined;
+};
+
+/**
+ * cleanXML simplify the JSON created from XML using xml2js
+ * @param  {[type]}  xml jsonised xml from xml2js
+ * @return {[type]}  simplified JSON object
+ */
 exports.cleanXML = function(xml) {
     var keys = Object.keys(xml),
-        o = 0, k = keys.length,
+        o = 0,
+        k = keys.length,
         node, value, singulars,
-        l = -1, i = -1, s = -1, e = -1,
+        l = -1,
+        i = -1,
+        s = -1,
+        e = -1,
         isInt = /^-?\s*\d+$/,
         isDig = /^(-?\s*\d*\.?\d*)$/,
         radix = 10;
 
-    for(; o < k; ++o){
+    for (; o < k; ++o) {
         node = keys[o];
 
-        if(xml[node] instanceof Array && xml[node].length === 1){
+        if (xml[node] instanceof Array && xml[node].length === 1) {
             xml[node] = xml[node][0];
         }
 
-        if(xml[node] instanceof Object){
+        if (xml[node] instanceof Object) {
             value = Object.keys(xml[node]);
 
-            if(value.length === 1){
+            if (value.length === 1) {
                 l = node.length;
 
                 singulars = [
@@ -31,41 +48,41 @@ exports.cleanXML = function(xml) {
 
                 i = singulars.indexOf(value[0]);
 
-                if(i !== -1){
+                if (i !== -1) {
                     xml[node] = xml[node][singulars[i]];
                 }
             }
         }
 
-        if(typeof(xml[node]) === 'object'){
+        if (typeof(xml[node]) === 'object') {
             xml[node] = this.cleanXML(xml[node]);
         }
 
-        if(typeof(xml[node]) === 'string'){
+        if (typeof(xml[node]) === 'string') {
             value = xml[node].trim();
 
-            if(value.match(isDig)){
-                if(value.match(isInt)){
-                    if(Math.abs(parseInt(value, radix)) <= Number.MAX_SAFE_INTEGER){
+            if (value.match(isDig)) {
+                if (value.match(isInt)) {
+                    if (Math.abs(parseInt(value, radix)) <= Number.MAX_SAFE_INTEGER) {
                         xml[node] = parseInt(value, radix);
                     }
-                }else{
+                } else {
                     l = value.length;
 
-                    if(l <= 15){
+                    if (l <= 15) {
                         xml[node] = parseFloat(value);
-                    }else{
-                        for(i = 0, s = -1, e = -1; i < l && e - s <= 15; ++i){
-                            if(value.charAt(i) > 0){
-                                if(s === -1){
+                    } else {
+                        for (i = 0, s = -1, e = -1; i < l && e - s <= 15; ++i) {
+                            if (value.charAt(i) > 0) {
+                                if (s === -1) {
                                     s = i;
-                                }else{
+                                } else {
                                     e = i;
                                 }
                             }
                         }
 
-                        if(e - s <= 15){
+                        if (e - s <= 15) {
                             xml[node] = parseFloat(value);
                         }
                     }
