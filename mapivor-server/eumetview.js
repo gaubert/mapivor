@@ -17,14 +17,18 @@
 
   getXMLRequest.done(function(jsonStr)
   {
-    console.log(jsonStr);
+    //console.log(jsonStr);
     if (typeof jsonStr == "string")
     {
-       jsonString = jsonStr;
+       // json string to json object
+       var jsonObj = $.parseJSON(jsonStr);
        //console.log(jsonString);
        var jsonPath = require('JSONPath');
-       var t = jsonPath.eval(jsonString, "$.Layer..CRS");
-       console.log("BEfore the layers" + t);
+       var result = jsonPath.eval(jsonObj, "$..Layer.Layer[2]");
+       console.log("jspnPath:" + JSON.stringify(result));
+       //console.log("jsonObj:" + JSON.stringify(jsonObj["WMS_Capabilities"]["Capability"]["Layer"]["Layer"]));
+       
+       draw_map(jsonObj);
     }
     else
     {
@@ -42,88 +46,92 @@
   //var jsonString = new WMSCapabilities(xmlString).toJSON();
   //console.log(jsonString);
 
-  var crs = L.CRS.EPSG4326;
-  var imageFormat  = 'image/png8';
-  var transparency = 'true';
-  var time = '2015-11-13T10:15:00.000Z';
+  function draw_map(capObj)
+  {
 
-  // backgound layer
-  var bkgLayer = L.tileLayer.wms("http://eumetview.eumetsat.int/geoserv/wms", {
-    layers: 'bkg-raster:bkg-raster',
-    format: imageFormat,
-    transparent: true,
-    version: '1.3.0',
-    crs: crs,
-    attribution: "EUMETSAT 2015"
-  });
+	  var crs = L.CRS.EPSG4326;
+	  var imageFormat  = 'image/png8';
+	  var transparency = 'true';
+	  var time = '2015-11-13T10:15:00.000Z';
 
-  // country layer
-  var countryBorders = L.tileLayer.wms("http://eumetview.eumetsat.int/geoserv/wms", {
-    layers: 'overlay:vector-overlay',
-    format: imageFormat,
-    transparent: true,
-    version: '1.3.0',
-    crs: crs,
-    time: time,
-    attribution: "EUMETSAT 2015"
-  });
+	  // backgound layer
+	  var bkgLayer = L.tileLayer.wms("http://eumetview.eumetsat.int/geoserv/wms", {
+		layers: 'bkg-raster:bkg-raster',
+		format: imageFormat,
+		transparent: true,
+		version: '1.3.0',
+		crs: crs,
+		attribution: "EUMETSAT 2015"
+	  });
 
-  // load a tile layer
-  var naturalLayer = L.tileLayer.wms("http://eumetview.eumetsat.int/geoserv/wms", {
-    layers: 'meteosat:natural',
-    format: imageFormat,
-    transparent: true,
-    version: '1.3.0',
-    crs: crs,
-    time: time,
-    attribution: "EUMETSAT 2015"
-  });
+	  // country layer
+	  var countryBorders = L.tileLayer.wms("http://eumetview.eumetsat.int/geoserv/wms", {
+		layers: 'overlay:vector-overlay',
+		format: imageFormat,
+		transparent: true,
+		version: '1.3.0',
+		crs: crs,
+		time: time,
+		attribution: "EUMETSAT 2015"
+	  });
 
-  var airmassLayer = L.tileLayer.wms("http://eumetview.eumetsat.int/geoserv/wms", {
-    layers: 'meteosat:airmass',
-    format: imageFormat,
-    transparent: true,
-    version: '1.3.0',
-    crs: crs,
-    time: time,
-    attribution: "EUMETSAT 2015"
-  });
+	  // load a tile layer
+	  var naturalLayer = L.tileLayer.wms("http://eumetview.eumetsat.int/geoserv/wms", {
+		layers: 'meteosat:natural',
+		format: imageFormat,
+		transparent: true,
+		version: '1.3.0',
+		crs: crs,
+		time: time,
+		attribution: "EUMETSAT 2015"
+	  });
+
+	  var airmassLayer = L.tileLayer.wms("http://eumetview.eumetsat.int/geoserv/wms", {
+		layers: 'meteosat:airmass',
+		format: imageFormat,
+		transparent: true,
+		version: '1.3.0',
+		crs: crs,
+		time: time,
+		attribution: "EUMETSAT 2015"
+	  });
 
 
-  var dustLayer = L.tileLayer.wms("http://eumetview.eumetsat.int/geoserv/wms", {
-    layers: 'meteosat:dust',
-    format: imageFormat,
-    transparent: true,
-    version: '1.3.0',
-    crs: crs,
-    time: time,
-    attribution: "EUMETSAT 2015"
-  });
+	  var dustLayer = L.tileLayer.wms("http://eumetview.eumetsat.int/geoserv/wms", {
+		layers: 'meteosat:dust',
+		format: imageFormat,
+		transparent: true,
+		version: '1.3.0',
+		crs: crs,
+		time: time,
+		attribution: "EUMETSAT 2015"
+	  });
 
-  // initialize the map
-  var map = L.map('map', {
-      center: [0,0],
-      zoom: 2,
-     });
-   
-   // map control
-   var baseMaps = {
-       "Meteosat Natural Color" : naturalLayer,
-       "Meteosat Airmass"       : airmassLayer,
-       "Meteosat Dust"          : dustLayer,
-   };
-  
-   var overlayMaps = {
-       "Basemap" : bkgLayer,
-       "Country Borders" : countryBorders
-   };
- 
-   var ctrl  = L.control.layers(baseMaps , {});
-   var ctrl1 = L.control.layers( {}, overlayMaps);
+	  // initialize the map
+	  var map = L.map('map', {
+		  center: [0,0],
+		  zoom: 2,
+		 });
+	   
+	   // map control
+	   var baseMaps = {
+		   "Meteosat Natural Color" : naturalLayer,
+		   "Meteosat Airmass"       : airmassLayer,
+		   "Meteosat Dust"          : dustLayer,
+	   };
+	  
+	   var overlayMaps = {
+		   "Basemap" : bkgLayer,
+		   "Country Borders" : countryBorders
+	   };
+	 
+	   var ctrl  = L.control.layers(baseMaps , {});
+	   var ctrl1 = L.control.layers( {}, overlayMaps);
 
-   map.addControl(ctrl);
-   map.addControl(ctrl1);
+	   map.addControl(ctrl);
+	   map.addControl(ctrl1);
 
-   map.addLayer(airmassLayer);
-   map.addLayer(countryBorders);
-   map.addLayer(bkgLayer);
+	   map.addLayer(airmassLayer);
+	   map.addLayer(countryBorders);
+	   map.addLayer(bkgLayer);
+  }

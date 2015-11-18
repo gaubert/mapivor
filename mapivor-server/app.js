@@ -3,6 +3,7 @@ var express = require('express');
 var fs = require('fs');
 var DOMParser = global.DOMParser = require('xmldom').DOMParser;
 var WMSCapabilities = require('wms-capabilities');
+var util = require('./util');
 
 var app = express();
 
@@ -26,7 +27,7 @@ app.get('/', function (req, res) {
 });
 
 app.get('/wms-get-capability', function (req, res) {
-  console.log("in callback");
+  console.log("in wms-get-capability");
 
   //The url we want is: 'www.random.org/integers/?num=1&min=1&max=10&col=1&base=10&format=plain&rnd=new'
   var options = {
@@ -47,8 +48,12 @@ app.get('/wms-get-capability', function (req, res) {
       
       var parseString = require('xml2js').parseString;
       parseString(str, function (err, result) {
+         if(err) throw err;
+
+         result = util.cleanXML(result);
+         
          console.log(result);
-         res.send(result);
+         res.send(JSON.stringify(result));
       });
     });
   }

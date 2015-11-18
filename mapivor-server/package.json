@@ -9,6 +9,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "JSONPath": "^0.10.0",
     "express": "^4.13.3",
     "wms-capabilities": "^0.3.0",
     "xmldom": "^0.1.19"
