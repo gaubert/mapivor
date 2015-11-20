@@ -69,7 +69,7 @@ app.get('/bundle.js', function(req, res) {
     res.send(data);
 });
 
-app.get('/NonTileLayer.js', function(req, res) {
+/*app.get('/NonTileLayer.js', function(req, res) {
     var data = fs.readFileSync('./NonTileLayer.js', 'utf8');
     res.send(data);
 });
@@ -78,6 +78,7 @@ app.get('/NonTileLayer.WMS.js', function(req, res) {
     var data = fs.readFileSync('./NonTileLayer.WMS.js', 'utf8');
     res.send(data);
 });
+*/
 
 app.get('/map', function(req, res) {
     console.log("in map");
