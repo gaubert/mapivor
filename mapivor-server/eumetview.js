@@ -11,13 +11,112 @@ var isDefined = function isDefined(x) {
 
 var getCapabilitiesUrl = 'http://localhost:3000/wms-get-capability';
 
+//default obj containing the information
+var info = { 'default' : 'meteosat:airmass', 'pos' : 0, selected : 'meteosat:airmass' };
+
+// object containing the layers
+var layers = {};
+
+$(document).ready(function() {
+    $( "#play" ).button({
+      text: false,
+      icons: {
+        primary: "ui-icon-play"
+      }
+    })
+    .click(function() {
+      var options;
+      if ( $( this ).text() === "play" ) {
+        options = {
+          label: "pause",
+          icons: {
+            primary: "ui-icon-pause"
+          }
+        };
+      } else {
+        options = {
+          label: "play",
+          icons: {
+            primary: "ui-icon-play"
+          }
+        };
+      }
+      $( this ).button( "option", options );
+    });
+    $( "#stop" ).button({
+      text: false,
+      icons: {
+        primary: "ui-icon-stop"
+      }
+    })
+    .click(function() {
+      $( "#play" ).button( "option", {
+        label: "play",
+        icons: {
+          primary: "ui-icon-play"
+        }
+      });
+    });
+	$( "#prev" ).button({
+	      text: false,
+	      icons: {
+	        primary: "ui-icon-seek-start"
+	      }
+	    })
+	    .click(function() {
+	    	if ($('#time-label').length) {
+	        
+	        	// only change layer if we are not at step 0
+		        if (info.pos > 0) {
+		        	info.pos -= 1;
+		        	// update label
+			        $('#time-label').text(info[info.selected].steps[info.pos]);
+
+			        // update layer
+			        var newStep = info[info.selected].steps[info.pos];
+			        $('#time-label').text( newStep);
+			        layers[info.selected].setParams( { time : newStep });
+		        }
+
+	    	} else {
+	          // throw err
+	    	}
+	    });
+    $( "#next" ).button({
+      text: false,
+      icons: {
+        primary: "ui-icon-seek-end"
+      }
+    })
+    .click(function() {
+
+       if ($('#time-label').length) {
+        	// only change layer if we are not at step 0
+	        if (info.pos < info.lastSteps) {
+	        	info.pos += 1;
+	        	// update label
+		        $('#time-label').text(info[info.selected].steps[info.pos]);
+
+		        // update layer
+		        var newStep = info[info.selected].steps[info.pos];
+		        $('#time-label').text( newStep);
+		        layers[info.selected].setParams( { time : newStep });
+	        }
+
+    	} else {
+          // throw err
+    	}    	
+    });
+
+    $( "#time" ).button({
+    	disabled : true,
+    });
+  });
+
 var getXMLRequest = $.ajax({
     url: getCapabilitiesUrl,
     contentType: "text/xml"
 });
-
-
-var jsonString = null;
 
 getXMLRequest.done(function(jsonStr) {
     //console.log(jsonStr);
@@ -29,7 +128,6 @@ getXMLRequest.done(function(jsonStr) {
         var jsonPath = require('JSONPath');
         var result = jsonPath.eval(jsonObj, "$..Layer.Layer");
 
-        var info = {};
         $.each(result[0], function(index, val) {
 
             var name = val.Name;
@@ -41,12 +139,17 @@ getXMLRequest.done(function(jsonStr) {
             }
             //console.log("Name: " + val.Name + " latest time:" + time[time.length - 1]);
             info[val.Name] = {
-                "latest": time[time.length - 1],
-                "steps": time
+                "latest"     : time[time.length - 1],
+                "steps"      : time,
+                "lastSteps"  : time.length - 1
             };
         });
 
         draw_map(info);
+
+         //set the first default steps in the time-label
+    	$('#time-label').text(info['meteosat:airmass'].latest);
+
     } else {
         //xml = data;
         console.log("need to handle that error");
@@ -57,9 +160,6 @@ getXMLRequest.fail(function(jqXHR, textStatus) {
     //console.log( "Ajax request failed... (" + textStatus + ' - ' + jqXHR.responseText ")." );
     console.log("Ajax request failed... (" + textStatus + ").");
 });
-
-//var jsonString = new WMSCapabilities(xmlString).toJSON();
-//console.log(jsonString);
 
 function draw_map(info) {
 
@@ -98,7 +198,7 @@ function draw_map(info) {
         attribution: "EUMETSAT 2015"
     });
 
-    var airmassLayer = L.tileLayer.wms("http://eumetview.eumetsat.int/geoserv/wms", {
+    layers['meteosat:airmass'] = L.tileLayer.wms("http://eumetview.eumetsat.int/geoserv/wms", {
         layers: 'meteosat:airmass',
         format: imageFormat,
         transparent: true,
@@ -108,6 +208,16 @@ function draw_map(info) {
         attribution: "EUMETSAT 2015"
     });
 
+    // add truck attributes. Default - insert at overlayPane
+    layers['nontiled'] = new L.NonTiledLayer.WMS("http://eumetview.eumetsat.int/geoserv/wms", {
+        layers: 'meteosat:airmass',
+        format: imageFormat,
+        transparent: true,
+        version: '1.3.0',
+        crs: crs,
+        time: info['meteosat:airmass'].latest,
+        attribution: "EUMETSAT 2015"
+    });
 
     var dustLayer = L.tileLayer.wms("http://eumetview.eumetsat.int/geoserv/wms", {
         layers: 'meteosat:dust',
@@ -128,7 +238,7 @@ function draw_map(info) {
     // map control
     var baseMaps = {
         "Meteosat Natural Color": naturalLayer,
-        "Meteosat Airmass": airmassLayer,
+        "Meteosat Airmass": layers['meteosat:airmass'],
         "Meteosat Dust": dustLayer,
     };
 
@@ -143,17 +253,15 @@ function draw_map(info) {
     map.addControl(ctrl);
     map.addControl(ctrl1);
 
-    map.addLayer(airmassLayer);
+    map.addLayer(layers['meteosat:airmass']);
     map.addLayer(countryBorders);
     map.addLayer(bkgLayer);
 
-    if ($('#time-label').length) {
-        /* code if found */
+    /*if ($('#time-label').length) {
+     
         console.log("Found");
         $('#time-label').text("hello");
 
-    } else {
-        /* code if not found */
-    }
+    } */
 
 }
