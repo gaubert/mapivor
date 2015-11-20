@@ -3,15 +3,41 @@
   <title>A Leaflet map!</title>
   <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.css"/>
   <script src="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.js"></script>
-  <script src="http://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+  <script src="NonTiledLayer.js"></script>
+  <script src="NonTiledLayer.WMS.js"></script>
+  <link rel="stylesheet" href="https://code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
+  <script src="https://code.jquery.com/jquery-1.10.2.js"></script>
+  <script src="https://code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
   <style>
-    #map{ height: 100% }
+    #map{ height: 80% }
   </style>
+  <style>
+  #toolbar {
+    padding: 4px;
+    display: inline-block;
+  }
+  /* support: IE7 */
+  *+html #toolbar {
+    display: inline;
+  }
+  </style>
+  <script>
+  //set navigation buttons
+  //$(document).ready(
+  
+  </script>
 </head>
 <body>
 
   <div id="map"></div>
-  <h1>hello</h1>
+  <div id="toolbar" class="ui-widget-header ui-corner-all">
+	  <button id="prev">go to beginning</button>
+	  <button id="next">go to end</button>
+	  <button id="play">play</button>
+	  <button id="stop">stop</button>
+
+	  <input type="checkbox" id="time"><label id="time-label" for="time">2015-11-19 04:30 UTC</label></input>
+  </div>
 
  <script src="bundle.js"></script>
 </body>
