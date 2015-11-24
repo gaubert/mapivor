@@ -210,6 +210,8 @@ function draw_map(info) {
 
     // add truck attributes. Default - insert at overlayPane
     layers['nontiled'] = new L.NonTiledLayer.WMS("http://eumetview.eumetsat.int/geoserv/wms", {
+        maxZoom: 8,
+        minZoom: 0,
         layers: 'meteosat:airmass',
         format: imageFormat,
         transparent: true,
@@ -240,6 +242,7 @@ function draw_map(info) {
         "Meteosat Natural Color": naturalLayer,
         "Meteosat Airmass": layers['meteosat:airmass'],
         "Meteosat Dust": dustLayer,
+        "Non Tiled" : layers['nontiled']
     };
 
     var overlayMaps = {

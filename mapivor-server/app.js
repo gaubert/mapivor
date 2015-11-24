@@ -5,6 +5,7 @@ var fs = require('fs');
 //var WMSCapabilities = require('wms-capabilities');
 var util = require('./util');
 
+
 // create express app
 var app = express();
 
@@ -21,7 +22,7 @@ var allowCrossDomain = function(req, res, next) {
 };
 
 app.use(allowCrossDomain);
-app.use(express.static('public'));
+app.use('/static', express.static('public'));
 
 app.get('/', function(req, res) {
     res.send('Default page is working');
