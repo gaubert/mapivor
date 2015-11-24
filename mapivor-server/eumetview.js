@@ -64,6 +64,7 @@ $(document).ready(function() {
 	      }
 	    })
 	    .click(function() {
+	    	console.log("prev");
 	    	if ($('#time-label').length) {
 	        
 	        	// only change layer if we are not at step 0
@@ -92,7 +93,7 @@ $(document).ready(function() {
 
        if ($('#time-label').length) {
         	// only change layer if we are not at step 0
-	        if (info.pos < info.lastSteps) {
+	        if (info.pos < info[info.selected].lastSteps) {
 	        	info.pos += 1;
 	        	// update label
 		        $('#time-label').text(info[info.selected].steps[info.pos]);
@@ -260,6 +261,9 @@ function draw_map(info) {
     map.addLayer(countryBorders);
     map.addLayer(bkgLayer);
 
+    map.on('baselayerchange', function(e) {
+        console.log("change layer.");
+    });
     /*if ($('#time-label').length) {
      
         console.log("Found");
