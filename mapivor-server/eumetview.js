@@ -28,7 +28,7 @@ function censor(censor) {
 var getCapabilitiesUrl = 'http://localhost:3000/wms-get-capability';
 
 //default obj containing the information
-var info = { 'default' : 'meteosat:airmass', 'pos' : 0, selected : 'meteosat:airmass' };
+var info = { 'default' : 'meteosat:airmass', 'pos' : 0, selected : 'meteosat:airmass' , animate: false};
 
 // object containing the layers
 var layers = {};
@@ -41,6 +41,8 @@ $(document).ready(function() {
       }
     })
     .click(function() {
+      
+      // change button
       var options;
       if ( $( this ).text() === "play" ) {
         options = {
@@ -58,6 +60,13 @@ $(document).ready(function() {
         };
       }
       $( this ).button( "option", options );
+
+      // action
+      if ( $( this ).text() === "play" ) {
+         info.animate = true;
+         animate(info);  
+      };
+
     });
     $( "#stop" ).button({
       text: false,
@@ -72,6 +81,9 @@ $(document).ready(function() {
           primary: "ui-icon-play"
         }
       });
+
+      // action
+      info.animate = false;
     });
 	$( "#prev" ).button({
 	      text: false,
@@ -177,6 +189,28 @@ getXMLRequest.fail(function(jqXHR, textStatus) {
     //console.log( "Ajax request failed... (" + textStatus + ' - ' + jqXHR.responseText ")." );
     console.log("Ajax request failed... (" + textStatus + ").");
 });
+
+function animate(info) {
+
+   if (info.animate) {
+        if (info.pos < info[info.selected].lastSteps) {
+            info.pos += 1;
+            // update label
+            $('#time-label').text(info[info.selected].steps[info.pos]);
+
+            // update layer
+            var newStep = info[info.selected].steps[info.pos];
+            $('#time-label').text( newStep);
+            layers[info.selected].setParams( { time : newStep });
+        }
+        else
+        {
+            //reset to pos 0
+            info.pos = 0;
+        }
+        setTimeout(animate(info),20); // call animate() in 20 msec
+   }
+}
 
 function draw_map(info) {
 
