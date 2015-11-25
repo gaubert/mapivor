@@ -194,6 +194,7 @@ function animate(info) {
 
    if (info.animate) {
         if (info.pos < info[info.selected].lastSteps) {
+            console.log("animate step " + info.pos);
             info.pos += 1;
             // update label
             $('#time-label').text(info[info.selected].steps[info.pos]);
@@ -208,7 +209,7 @@ function animate(info) {
             //reset to pos 0
             info.pos = 0;
         }
-        setTimeout(animate(info),20); // call animate() in 20 msec
+        setTimeout(animate(info),500); // call animate() in 20 msec
    }
 }
 
@@ -320,7 +321,8 @@ function draw_map(info) {
         "Meteosat Natural Color" : 'meteosat:natural',
         "Meteosat Airmass"       : 'meteosat:airmass',
         "Meteosat Dust"          : 'meteosat:dust',
-        "Non Tiled"              : 'nt:meteosat:airmass'
+        "NT Meteosat Airmass"    : 'nt:meteosat:airmass',
+        "NT Meteosat Natural"    : 'nt:meteosat:natural'
     }
 
     var overlayMaps = {
