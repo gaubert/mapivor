@@ -9,6 +9,22 @@ var isDefined = function isDefined(x) {
     return x !== undefined;
 };
 
+function censor(censor) {
+  var i = 0;
+
+  return function(key, value) {
+    if(i !== 0 && typeof(censor) === 'object' && typeof(value) == 'object' && censor == value) 
+      return '[Circular]'; 
+
+    if(i >= 29) // seems to be a harded maximum of 30 serialized objects?
+      return '[Unknown]';
+
+    ++i; // so we know we aren't using the original object anymore
+
+    return value;  
+  }
+}
+
 var getCapabilitiesUrl = 'http://localhost:3000/wms-get-capability';
 
 //default obj containing the information
@@ -149,7 +165,7 @@ getXMLRequest.done(function(jsonStr) {
         draw_map(info);
 
          //set the first default steps in the time-label
-    	$('#time-label').text(info['meteosat:airmass'].latest);
+    	$('#time-label').text(info[info.default].latest);
 
     } else {
         //xml = data;
@@ -189,7 +205,7 @@ function draw_map(info) {
     });
 
     // load a tile layer
-    var naturalLayer = L.tileLayer.wms("http://eumetview.eumetsat.int/geoserv/wms", {
+    layers['meteosat:natural'] = L.tileLayer.wms("http://eumetview.eumetsat.int/geoserv/wms", {
         layers: 'meteosat:natural',
         format: imageFormat,
         transparent: true,
@@ -209,8 +225,8 @@ function draw_map(info) {
         attribution: "EUMETSAT 2015"
     });
 
-    // add truck attributes. Default - insert at overlayPane
-    layers['nontiled'] = new L.NonTiledLayer.WMS("http://eumetview.eumetsat.int/geoserv/wms", {
+    // add NonTiled Layers
+    layers['nt:meteosat:airmass'] = new L.NonTiledLayer.WMS("http://eumetview.eumetsat.int/geoserv/wms", {
         maxZoom: 8,
         minZoom: 0,
         layers: 'meteosat:airmass',
@@ -222,7 +238,25 @@ function draw_map(info) {
         attribution: "EUMETSAT 2015"
     });
 
-    var dustLayer = L.tileLayer.wms("http://eumetview.eumetsat.int/geoserv/wms", {
+    // update info to have the same steps as meteosat airmass for the moment
+    info['nt:meteosat:airmass'] = info['meteosat:airmass'];
+
+    layers['nt:meteosat:natural'] = new L.NonTiledLayer.WMS("http://eumetview.eumetsat.int/geoserv/wms", {
+        maxZoom: 8,
+        minZoom: 0,
+        layers: 'meteosat:natural',
+        format: imageFormat,
+        transparent: true,
+        version: '1.3.0',
+        crs: crs,
+        time: info['meteosat:natural'].latest,
+        attribution: "EUMETSAT 2015"
+    });
+
+    // update info to have the same steps as meteosat airmass for the moment
+    info['nt:meteosat:natural'] = info['meteosat:natural'];
+
+    layers['meteosat:dust'] = L.tileLayer.wms("http://eumetview.eumetsat.int/geoserv/wms", {
         layers: 'meteosat:dust',
         format: imageFormat,
         transparent: true,
@@ -240,11 +274,20 @@ function draw_map(info) {
 
     // map control
     var baseMaps = {
-        "Meteosat Natural Color": naturalLayer,
-        "Meteosat Airmass": layers['meteosat:airmass'],
-        "Meteosat Dust": dustLayer,
-        "Non Tiled" : layers['nontiled']
-    };
+        "Meteosat Natural Color"   : layers['meteosat:natural'],
+        "Meteosat Airmass"         : layers['meteosat:airmass'],
+        "Meteosat Dust"            : layers['meteosat:dust'],
+        "NT Meteosat Airmass"      : layers['nt:meteosat:airmass'],
+        "NT Meteosat Natural"      : layers['nt:meteosat:natural']
+    }; 
+
+    // correspondance Names shown on the map and layer names
+    var baseMapsNames = {
+        "Meteosat Natural Color" : 'meteosat:natural',
+        "Meteosat Airmass"       : 'meteosat:airmass',
+        "Meteosat Dust"          : 'meteosat:dust',
+        "Non Tiled"              : 'nt:meteosat:airmass'
+    }
 
     var overlayMaps = {
         "Basemap": bkgLayer,
@@ -262,13 +305,10 @@ function draw_map(info) {
     map.addLayer(bkgLayer);
 
     map.on('baselayerchange', function(e) {
-        console.log("change layer.");
+        console.log("change layer: " + JSON.stringify(e, censor(e)));
+        console.log("change to layer: " + e.name);
+        
+        info.selected = baseMapsNames[e.name];
+        console.log("info.selected =" + info.selected);
     });
-    /*if ($('#time-label').length) {
-     
-        console.log("Found");
-        $('#time-label').text("hello");
-
-    } */
-
 }
