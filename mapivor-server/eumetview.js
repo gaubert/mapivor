@@ -82,6 +82,8 @@ $(document).ready(function() {
         }
       });
 
+      console.log("stop button cliked");
+
       // action
       info.animate = false;
     });
@@ -209,7 +211,7 @@ function animate(info) {
             //reset to pos 0
             info.pos = 0;
         }
-        setTimeout(animate(info),500); // call animate() in 20 msec
+        setTimeout(animate(info),1000); // call animate() in 20 msec
    }
 }
 
