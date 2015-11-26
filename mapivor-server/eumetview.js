@@ -28,7 +28,7 @@ function censor(censor) {
 var getCapabilitiesUrl = 'http://localhost:3000/wms-get-capability';
 
 //default obj containing the information
-var info = { 'default' : 'meteosat:airmass', 'pos' : 0, selected : 'meteosat:airmass' , animate: false};
+var info = { 'default' : 'meteosat:airmass', 'pos' : 0, selected : 'meteosat:airmass' , animate: undefined};
 
 // object containing the layers
 var layers = {};
@@ -62,11 +62,15 @@ $(document).ready(function() {
       $( this ).button( "option", options );
 
       // action
-      if ( $( this ).text() === "play" ) {
-         info.animate = true;
-         animate(info);  
-      };
-
+      if ( $( this ).text() === "pause" ) {
+         console.log("will start animation");
+         startAnimation(info);  
+      }
+      else
+      {
+      	 console.log("will stop animation");
+      	 stopAnimation(info);
+      }
     });
     $( "#stop" ).button({
       text: false,
@@ -82,10 +86,8 @@ $(document).ready(function() {
         }
       });
 
-      console.log("stop button cliked");
-
-      // action
-      info.animate = false;
+      console.log("will stop animation");
+      stopAnimation(info);
     });
 	$( "#prev" ).button({
 	      text: false,
@@ -192,27 +194,42 @@ getXMLRequest.fail(function(jqXHR, textStatus) {
     console.log("Ajax request failed... (" + textStatus + ").");
 });
 
-function animate(info) {
 
-   if (info.animate) {
-        if (info.pos < info[info.selected].lastSteps) {
-            console.log("animate step " + info.pos);
-            info.pos += 1;
-            // update label
-            $('#time-label').text(info[info.selected].steps[info.pos]);
+function nextStep(info) {
+	setInterval(animate(info), 1000); // call animate() in 20 msec
+}
 
-            // update layer
-            var newStep = info[info.selected].steps[info.pos];
-            $('#time-label').text( newStep);
-            layers[info.selected].setParams( { time : newStep });
-        }
-        else
-        {
-            //reset to pos 0
-            info.pos = 0;
-        }
-        setTimeout(animate(info),1000); // call animate() in 20 msec
+function startAnimation(info) {
+
+   console.log("station animation");
+   if (! isDefined(info.animate)) {
+
+   		info.animate = setInterval(function(){
+   			console.log("Next interval");
+
+   			if (info.pos < info[info.selected].lastSteps) {
+	            console.log("animate step " + info.pos);
+	            info.pos += 1;
+	            // update label
+	            $('#time-label').text(info[info.selected].steps[info.pos]);
+
+	            // update layer
+	            var newStep = info[info.selected].steps[info.pos];
+	            $('#time-label').text( newStep);
+	            layers[info.selected].setParams( { time : newStep });
+        	}
+        	else
+        	{
+            	//reset to pos 0
+            	info.pos = 0;
+        	}
+   		}, 1000);    
    }
+}
+
+function stopAnimation(info) {
+	console.log("stop animation");
+	clearInterval(info.animate);
 }
 
 function draw_map(info) {
