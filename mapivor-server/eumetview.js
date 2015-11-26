@@ -28,6 +28,7 @@ function censor(censor) {
 var getCapabilitiesUrl = 'http://localhost:3000/wms-get-capability';
 
 //default obj containing the information
+var animationSpeed = 100 // ms. Slack time between each image
 var info = { 'default' : 'meteosat:airmass', 'pos' : 0, selected : 'meteosat:airmass' , animate: undefined};
 
 // object containing the layers
@@ -195,10 +196,6 @@ getXMLRequest.fail(function(jqXHR, textStatus) {
 });
 
 
-function nextStep(info) {
-	setInterval(animate(info), 1000); // call animate() in 20 msec
-}
-
 function startAnimation(info) {
 
    console.log("station animation");
@@ -230,6 +227,7 @@ function startAnimation(info) {
 function stopAnimation(info) {
 	console.log("stop animation");
 	clearInterval(info.animate);
+	info.animate = undefined;
 }
 
 function draw_map(info) {
