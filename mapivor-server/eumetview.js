@@ -28,7 +28,9 @@ function censor(censor) {
 var getCapabilitiesUrl = 'http://localhost:3000/wms-get-capability';
 
 //default obj containing the information
-var animationSpeed = 700 // ms. Slack time between each image
+var animationSpeed     = 500 // ms. waiting time between each image
+var animationImgLoaded = true; // start at true
+
 var info = { 'default' : 'meteosat:airmass', 'pos' : 0, selected : 'meteosat:airmass' , animate: undefined};
 
 // object containing the layers
@@ -203,30 +205,30 @@ function startAnimation(info) {
    if (! isDefined(info.animate)) {
 
    		info.animate = setInterval(function(){
-   			console.log("Next interval");
+   			
+            if (animationImgLoaded)
+            {
+            	animationImgLoaded = false;
+	   			console.log("Next interval");
 
-   			if (info.pos < info[info.selected].lastSteps) {
-	            console.log("animate step " + info.pos);
-	            info.pos += 1;
-	            // update label
-	            $('#time-label').text(info[info.selected].steps[info.pos]);
+	   			if (info.pos < info[info.selected].lastSteps) {
+		            console.log("animate step " + info.pos);
+		            info.pos += 1;
+		            // update label
+		            $('#time-label').text(info[info.selected].steps[info.pos]);
 
-	            // update layer
-	            var newStep = info[info.selected].steps[info.pos];
-	            $('#time-label').text( newStep);
-	            layers[info.selected].setParams( { time : newStep });
-
-	            layers[info.selected].on('load', function(e) {
-			        //console.log("load layer: " + JSON.stringify(e, censor(e)));
-			        console.log("loaded layer");
-    			});
-
-        	}
-        	else
-        	{
-            	//reset to pos 0
-            	info.pos = 0;
-        	}
+		            // update layer
+		            var newStep = info[info.selected].steps[info.pos];
+		            $('#time-label').text( newStep);
+		            layers[info.selected].setParams( { time : newStep });
+	        	}
+	        	else
+	        	{
+	            	//reset to pos 0
+	            	info.pos = 0;
+	        	}
+	        }
+	        console.log("sleep");
    		}, animationSpeed);    
    }
 }
@@ -334,6 +336,22 @@ function drawMap(info) {
     // update info to have the same steps as meteosat airmass for the moment
     info['nt:meteosat:natural'] = info['meteosat:natural'];
 
+    layers['nt:meteosat:dust'] = L.WMS.overlay("http://eumetview.eumetsat.int/geoserv/wms", {
+        maxZoom: 8,
+        minZoom: 0,
+        layers: 'meteosat:dust',
+        format: imageFormat,
+        transparent: true,
+        version: '1.3.0',
+        crs: crs,
+        zIndex: 1,
+        time: info['meteosat:dust'].latest,
+        attribution: "EUMETSAT 2015"
+    });
+
+    // update info to have the same steps as meteosat airmass for the moment
+    info['nt:meteosat:dust'] = info['meteosat:dust'];
+
     // initialize the map
     var map = L.map('map', {
         center: [0, 0],
@@ -348,6 +366,7 @@ function drawMap(info) {
         "Meteosat Dust"            : layers['meteosat:dust'],
         "NT Meteosat Airmass"      : layers['nt:meteosat:airmass'],
         "NT Meteosat Natural"      : layers['nt:meteosat:natural'],
+        "NT Meteosat Dust"      : layers['nt:meteosat:dust'],
     }; 
 
     // correspondance Names shown on the map and layer names
@@ -357,6 +376,7 @@ function drawMap(info) {
         "Meteosat Dust"          : 'meteosat:dust',
         "NT Meteosat Airmass"    : 'nt:meteosat:airmass',
         "NT Meteosat Natural"    : 'nt:meteosat:natural',
+        "NT Meteosat Dust"       : 'nt:meteosat:dust',
     }
 
     var overlayMaps = {
@@ -367,14 +387,30 @@ function drawMap(info) {
     var ctrl = L.control.layers(baseMaps, {});
     var ctrl1 = L.control.layers({}, overlayMaps);
 
-
-
     map.addControl(ctrl);
     map.addControl(ctrl1);
 
     map.addLayer(layers['meteosat:airmass']);
     map.addLayer(countryBorders);
     map.addLayer(bkgLayer);
+
+    
+    // set closure
+    layers['nt:meteosat:natural'].on('load', function(e) {
+		console.log("loaded nt:meteosat:natural layer");
+		animationImgLoaded = true;		
+	});
+
+	// set closure
+    layers['nt:meteosat:airmass'].on('load', function(e) {
+		console.log("loaded nt:meteosat:airmass layer");
+		animationImgLoaded = true;		
+	});
+
+	layers['nt:meteosat:dust'].on('load', function(e) {
+		console.log("loaded nt:meteosat:dust layer");
+		animationImgLoaded = true;		
+	});
 
     map.on('baselayerchange', function(e) {
         console.log("change layer: " + JSON.stringify(e, censor(e)));
