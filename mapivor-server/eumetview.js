@@ -179,7 +179,8 @@ getXMLRequest.done(function(jsonStr) {
             };
         });
 
-        draw_map(info);
+        //draw the map with layers
+        drawMap(info);
 
          //set the first default steps in the time-label
     	$('#time-label').text(info[info.default].latest);
@@ -214,6 +215,12 @@ function startAnimation(info) {
 	            var newStep = info[info.selected].steps[info.pos];
 	            $('#time-label').text( newStep);
 	            layers[info.selected].setParams( { time : newStep });
+
+	            layers[info.selected].on('load', function(e) {
+			        //console.log("load layer: " + JSON.stringify(e, censor(e)));
+			        console.log("loaded layer");
+    			});
+
         	}
         	else
         	{
@@ -230,7 +237,9 @@ function stopAnimation(info) {
 	info.animate = undefined;
 }
 
-function draw_map(info) {
+function drawMap(info) {
+
+    //var leafletWMS = require('leaflet.wms');
 
     var crs = L.CRS.EPSG4326;
     var imageFormat = 'image/png8';
@@ -243,6 +252,7 @@ function draw_map(info) {
         transparent: true,
         version: '1.3.0',
         crs: crs,
+        zIndex: 0, //lowest zindex
         attribution: "EUMETSAT 2015"
     });
 
@@ -253,6 +263,7 @@ function draw_map(info) {
         transparent: true,
         version: '1.3.0',
         crs: crs,
+        zIndex: 7,  // hihest z index
         attribution: "EUMETSAT 2015"
     });
 
@@ -263,6 +274,7 @@ function draw_map(info) {
         transparent: true,
         version: '1.3.0',
         crs: crs,
+        zIndex: 1,
         time: info['meteosat:natural'].latest,
         attribution: "EUMETSAT 2015"
     });
@@ -273,40 +285,10 @@ function draw_map(info) {
         transparent: true,
         version: '1.3.0',
         crs: crs,
+        zIndex: 1,
         time: info['meteosat:airmass'].latest,
         attribution: "EUMETSAT 2015"
     });
-
-    // add NonTiled Layers
-    layers['nt:meteosat:airmass'] = new L.NonTiledLayer.WMS("http://eumetview.eumetsat.int/geoserv/wms", {
-        maxZoom: 8,
-        minZoom: 0,
-        layers: 'meteosat:airmass',
-        format: imageFormat,
-        transparent: true,
-        version: '1.3.0',
-        crs: crs,
-        time: info['meteosat:airmass'].latest,
-        attribution: "EUMETSAT 2015"
-    });
-
-    // update info to have the same steps as meteosat airmass for the moment
-    info['nt:meteosat:airmass'] = info['meteosat:airmass'];
-
-    layers['nt:meteosat:natural'] = new L.NonTiledLayer.WMS("http://eumetview.eumetsat.int/geoserv/wms", {
-        maxZoom: 8,
-        minZoom: 0,
-        layers: 'meteosat:natural',
-        format: imageFormat,
-        transparent: true,
-        version: '1.3.0',
-        crs: crs,
-        time: info['meteosat:natural'].latest,
-        attribution: "EUMETSAT 2015"
-    });
-
-    // update info to have the same steps as meteosat airmass for the moment
-    info['nt:meteosat:natural'] = info['meteosat:natural'];
 
     layers['meteosat:dust'] = L.tileLayer.wms("http://eumetview.eumetsat.int/geoserv/wms", {
         layers: 'meteosat:dust',
@@ -314,9 +296,43 @@ function draw_map(info) {
         transparent: true,
         version: '1.3.0',
         crs: crs,
+        zIndex: 1,
         time: info['meteosat:dust'].latest,
         attribution: "EUMETSAT 2015"
     });
+
+    // add NonTiled Layers
+    layers['nt:meteosat:airmass'] = L.WMS.overlay("http://eumetview.eumetsat.int/geoserv/wms", {
+        maxZoom: 8,
+        minZoom: 0,
+        layers: 'meteosat:airmass',
+        format: imageFormat,
+        transparent: true,
+        version: '1.3.0',
+        crs: crs,
+        zIndex: 1,
+        time: info['meteosat:airmass'].latest,
+        attribution: "EUMETSAT 2015"
+    });
+
+    // update info to have the same steps as meteosat airmass for the moment
+    info['nt:meteosat:airmass'] = info['meteosat:airmass'];
+
+    layers['nt:meteosat:natural'] = L.WMS.overlay("http://eumetview.eumetsat.int/geoserv/wms", {
+        maxZoom: 8,
+        minZoom: 0,
+        layers: 'meteosat:natural',
+        format: imageFormat,
+        transparent: true,
+        version: '1.3.0',
+        crs: crs,
+        zIndex: 1,
+        time: info['meteosat:natural'].latest,
+        attribution: "EUMETSAT 2015"
+    });
+
+    // update info to have the same steps as meteosat airmass for the moment
+    info['nt:meteosat:natural'] = info['meteosat:natural'];
 
     // initialize the map
     var map = L.map('map', {
@@ -331,7 +347,7 @@ function draw_map(info) {
         "Meteosat Airmass"         : layers['meteosat:airmass'],
         "Meteosat Dust"            : layers['meteosat:dust'],
         "NT Meteosat Airmass"      : layers['nt:meteosat:airmass'],
-        "NT Meteosat Natural"      : layers['nt:meteosat:natural']
+        "NT Meteosat Natural"      : layers['nt:meteosat:natural'],
     }; 
 
     // correspondance Names shown on the map and layer names
@@ -340,7 +356,7 @@ function draw_map(info) {
         "Meteosat Airmass"       : 'meteosat:airmass',
         "Meteosat Dust"          : 'meteosat:dust',
         "NT Meteosat Airmass"    : 'nt:meteosat:airmass',
-        "NT Meteosat Natural"    : 'nt:meteosat:natural'
+        "NT Meteosat Natural"    : 'nt:meteosat:natural',
     }
 
     var overlayMaps = {
@@ -350,6 +366,8 @@ function draw_map(info) {
 
     var ctrl = L.control.layers(baseMaps, {});
     var ctrl1 = L.control.layers({}, overlayMaps);
+
+
 
     map.addControl(ctrl);
     map.addControl(ctrl1);
@@ -364,5 +382,9 @@ function draw_map(info) {
         
         info.selected = baseMapsNames[e.name];
         console.log("info.selected =" + info.selected);
+
+        var bounds = map.getPixelBounds(),
+            sw = map.unproject(bounds.getBottomLeft()),
+            ne = map.unproject(bounds.getTopRight());
     });
 }

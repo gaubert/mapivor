@@ -159,6 +159,12 @@ L.NonTiledLayer = L.Layer.extend({
     },
 
     _getClippedBounds: function () {
+
+        var bounds = this._map.getPixelBounds(),
+            sw = this._map.unproject(bounds.getBottomLeft()),
+            ne = this._map.unproject(bounds.getTopRight());
+
+
         var wgsBounds = this._map.getBounds();
 
         // truncate bounds to valid wgs bounds
