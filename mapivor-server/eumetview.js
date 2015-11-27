@@ -28,7 +28,7 @@ function censor(censor) {
 var getCapabilitiesUrl = 'http://localhost:3000/wms-get-capability';
 
 //default obj containing the information
-var animationSpeed = 500 // ms. Slack time between each image
+var animationSpeed = 700 // ms. Slack time between each image
 var info = { 'default' : 'meteosat:airmass', 'pos' : 0, selected : 'meteosat:airmass' , animate: undefined};
 
 // object containing the layers
@@ -321,7 +321,7 @@ function draw_map(info) {
     // initialize the map
     var map = L.map('map', {
         center: [0, 0],
-        zoom: 0,
+        zoom: 2,
         crs: L.CRS.EPSG4326,
     });
 
