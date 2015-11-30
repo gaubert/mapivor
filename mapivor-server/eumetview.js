@@ -28,7 +28,7 @@ function censor(censor) {
 var getCapabilitiesUrl = 'http://localhost:3000/wms-get-capability';
 
 //default obj containing the information
-var animationSpeed     = 500 // ms. waiting time between each image
+var animationSpeed     = 300 // ms. waiting time between each image
 var animationImgLoaded = true; // start at true
 
 var info = { 'default' : 'meteosat:airmass', 'pos' : 0, selected : 'meteosat:airmass' , animate: undefined};
@@ -36,75 +36,162 @@ var info = { 'default' : 'meteosat:airmass', 'pos' : 0, selected : 'meteosat:air
 // object containing the layers
 var layers = {};
 
+
+/*
+  Document ready. Install buttons outside the map for the time navigation
+ */
 $(document).ready(function() {
-    $( "#play" ).button({
-      text: false,
-      icons: {
-        primary: "ui-icon-play"
-      }
-    })
-    .click(function() {
-      
-      // change button
-      var options;
-      if ( $( this ).text() === "play" ) {
-        options = {
-          label: "pause",
-          icons: {
-            primary: "ui-icon-pause"
-          }
-        };
-      } else {
-        options = {
-          label: "play",
-          icons: {
-            primary: "ui-icon-play"
-          }
-        };
-      }
-      $( this ).button( "option", options );
+    
+    setNavigationButtons(); // install jquery-ui navigation buttons
 
-      // action
-      if ( $( this ).text() === "pause" ) {
-         console.log("will start animation");
-         startAnimation(info);  
-      }
-      else
-      {
-      	 console.log("will stop animation");
-      	 stopAnimation(info);
-      }
-    });
-    $( "#stop" ).button({
-      text: false,
-      icons: {
-        primary: "ui-icon-stop"
-      }
-    })
-    .click(function() {
-      $( "#play" ).button( "option", {
-        label: "play",
-        icons: {
-          primary: "ui-icon-play"
-        }
-      });
+    // ajax reques to get the GetCapabilities results and then draw the map
+    var getXMLRequest = $.ajax({
+	    url: getCapabilitiesUrl,
+	    contentType: "text/xml"
+	});
 
-      console.log("will stop animation");
-      stopAnimation(info);
-    });
-	$( "#prev" ).button({
+	getXMLRequest.done(function(jsonStr) {
+	    //console.log(jsonStr);
+	    if (typeof jsonStr == "string") {
+	        // json string to json object
+	        var jsonObj = $.parseJSON(jsonStr);
+
+	        //use jsonPath to access the object
+	        var jsonPath = require('JSONPath');
+	        var result = jsonPath.eval(jsonObj, "$..Layer.Layer");
+
+	        $.each(result[0], function(index, val) {
+
+	            var name = val.Name;
+	            var keys = Object.keys(val);
+	            var dim = val.Dimension;
+	            var time = "";
+	            if (isDefined(val.Dimension)) {
+	                time = val.Dimension["_"].split(",");
+	            }
+	            //console.log("Name: " + val.Name + " latest time:" + time[time.length - 1]);
+	            info[val.Name] = {
+	                "latest"     : time[time.length - 1],
+	                "steps"      : time,
+	                "lastSteps"  : time.length - 1
+	            };
+	        });
+
+	        //draw the map with layers
+	        drawMap(info);
+
+	         //set the first default steps in the time-label
+	    	$('#time-label').text(info[info.default].latest);
+
+	    } else {
+	        //xml = data;
+	        console.log("need to handle that error");
+	    }
+	});
+
+	getXMLRequest.fail(function(jqXHR, textStatus) {
+	    //console.log( "Ajax request failed... (" + textStatus + ' - ' + jqXHR.responseText ")." );
+	    console.log("Ajax request failed... (" + textStatus + ").");
+	});
+});
+
+/*
+ Install navigation buttons
+ */
+function setNavigationButtons() {
+	$( "#play" ).button({
 	      text: false,
 	      icons: {
-	        primary: "ui-icon-seek-start"
+	        primary: "ui-icon-play"
 	      }
 	    })
 	    .click(function() {
-	    	console.log("prev");
-	    	if ($('#time-label').length) {
-	        
+	      
+	      // change button
+	      var options;
+	      if ( $( this ).text() === "play" ) {
+	        options = {
+	          label: "pause",
+	          icons: {
+	            primary: "ui-icon-pause"
+	          }
+	        };
+	      } else {
+	        options = {
+	          label: "play",
+	          icons: {
+	            primary: "ui-icon-play"
+	          }
+	        };
+	      }
+	      $( this ).button( "option", options );
+
+	      // action
+	      if ( $( this ).text() === "pause" ) {
+	         console.log("will start animation");
+	         startAnimation(info);  
+	      }
+	      else
+	      {
+	      	 console.log("will stop animation");
+	      	 stopAnimation(info);
+	      }
+	    });
+	    $( "#stop" ).button({
+	      text: false,
+	      icons: {
+	        primary: "ui-icon-stop"
+	      }
+	    })
+	    .click(function() {
+	      $( "#play" ).button( "option", {
+	        label: "play",
+	        icons: {
+	          primary: "ui-icon-play"
+	        }
+	      });
+
+	      console.log("will stop animation");
+	      stopAnimation(info);
+	    });
+		$( "#prev" ).button({
+		      text: false,
+		      icons: {
+		        primary: "ui-icon-seek-start"
+		      }
+		    })
+		    .click(function() {
+		    	console.log("prev");
+		    	if ($('#time-label').length) {
+		        
+		        	// only change layer if we are not at step 0
+			        if (info.pos > 0) {
+			        	info.pos -= 1;
+			        	// update label
+				        $('#time-label').text(info[info.selected].steps[info.pos]);
+
+				        // update layer
+				        var newStep = info[info.selected].steps[info.pos];
+				        $('#time-label').text( newStep);
+				        layers[info.selected].setParams( { time : newStep });
+			        }
+
+		    	} else {
+		          // throw err
+		    	}
+		    });
+	    $( "#next" ).button({
+	      text: false,
+	      icons: {
+	        primary: "ui-icon-seek-end"
+	      }
+	    })
+	    .click(function() {
+
+	       if ($('#time-label').length) {
 	        	// only change layer if we are not at step 0
-		        if (info.pos > 0) {
-		        	info.pos -= 1;
+		        if (info.pos < info[info.selected].lastSteps) {
+		        	info.pos += 1;
 		        	// update label
 			        $('#time-label').text(info[info.selected].steps[info.pos]);
 
@@ -116,89 +203,18 @@ $(document).ready(function() {
 
 	    	} else {
 	          // throw err
-	    	}
+	    	}    	
 	    });
-    $( "#next" ).button({
-      text: false,
-      icons: {
-        primary: "ui-icon-seek-end"
-      }
-    })
-    .click(function() {
 
-       if ($('#time-label').length) {
-        	// only change layer if we are not at step 0
-	        if (info.pos < info[info.selected].lastSteps) {
-	        	info.pos += 1;
-	        	// update label
-		        $('#time-label').text(info[info.selected].steps[info.pos]);
-
-		        // update layer
-		        var newStep = info[info.selected].steps[info.pos];
-		        $('#time-label').text( newStep);
-		        layers[info.selected].setParams( { time : newStep });
-	        }
-
-    	} else {
-          // throw err
-    	}    	
-    });
-
-    $( "#time" ).button({
-    	disabled : true,
-    });
-  });
-
-var getXMLRequest = $.ajax({
-    url: getCapabilitiesUrl,
-    contentType: "text/xml"
-});
-
-getXMLRequest.done(function(jsonStr) {
-    //console.log(jsonStr);
-    if (typeof jsonStr == "string") {
-        // json string to json object
-        var jsonObj = $.parseJSON(jsonStr);
-
-        //use jsonPath to access the object
-        var jsonPath = require('JSONPath');
-        var result = jsonPath.eval(jsonObj, "$..Layer.Layer");
-
-        $.each(result[0], function(index, val) {
-
-            var name = val.Name;
-            var keys = Object.keys(val);
-            var dim = val.Dimension;
-            var time = "";
-            if (isDefined(val.Dimension)) {
-                time = val.Dimension["_"].split(",");
-            }
-            //console.log("Name: " + val.Name + " latest time:" + time[time.length - 1]);
-            info[val.Name] = {
-                "latest"     : time[time.length - 1],
-                "steps"      : time,
-                "lastSteps"  : time.length - 1
-            };
-        });
-
-        //draw the map with layers
-        drawMap(info);
-
-         //set the first default steps in the time-label
-    	$('#time-label').text(info[info.default].latest);
-
-    } else {
-        //xml = data;
-        console.log("need to handle that error");
-    }
-});
-
-getXMLRequest.fail(function(jqXHR, textStatus) {
-    //console.log( "Ajax request failed... (" + textStatus + ' - ' + jqXHR.responseText ")." );
-    console.log("Ajax request failed... (" + textStatus + ").");
-});
+	    $( "#time" ).button({
+	    	disabled : true,
+	    });
+};
 
 
+/*
+  manage the animation when the play button is clicked.
+ */ 
 function startAnimation(info) {
 
    console.log("station animation");
@@ -214,11 +230,10 @@ function startAnimation(info) {
 	   			if (info.pos < info[info.selected].lastSteps) {
 		            console.log("animate step " + info.pos);
 		            info.pos += 1;
-		            // update label
-		            $('#time-label').text(info[info.selected].steps[info.pos]);
-
-		            // update layer
+		            
+		            // update layer and label
 		            var newStep = info[info.selected].steps[info.pos];
+
 		            $('#time-label').text( newStep);
 		            layers[info.selected].setParams( { time : newStep });
 	        	}
@@ -228,17 +243,23 @@ function startAnimation(info) {
 	            	info.pos = 0;
 	        	}
 	        }
-	        console.log("sleep");
+	        console.log("do nothing, wait for the image to be loaded");
    		}, animationSpeed);    
    }
 }
 
+/*
+   Stop the animation mode
+ */
 function stopAnimation(info) {
 	console.log("stop animation");
 	clearInterval(info.animate);
 	info.animate = undefined;
 }
 
+/*
+  draw the map 
+ */
 function drawMap(info) {
 
     //var leafletWMS = require('leaflet.wms');
@@ -366,7 +387,7 @@ function drawMap(info) {
         "Meteosat Dust"            : layers['meteosat:dust'],
         "NT Meteosat Airmass"      : layers['nt:meteosat:airmass'],
         "NT Meteosat Natural"      : layers['nt:meteosat:natural'],
-        "NT Meteosat Dust"      : layers['nt:meteosat:dust'],
+        "NT Meteosat Dust"         : layers['nt:meteosat:dust'],
     }; 
 
     // correspondance Names shown on the map and layer names
@@ -384,12 +405,16 @@ function drawMap(info) {
         "Country Borders": countryBorders
     };
 
-    var ctrl = L.control.layers(baseMaps, {});
-    var ctrl1 = L.control.layers({}, overlayMaps);
+    var ctrlBaseMaps    = L.control.layers(baseMaps, {});
+    var ctrlOverlayMaps = L.control.layers({}, overlayMaps);
+    var ctrlProj        = L.easyButton( '&lt;span class="star"&gt;&amp;starf;&lt;/span&gt;', function(){
+                                 alert('you just clicked the html entity \&amp;starf;');
+                          });
 
-    map.addControl(ctrl);
-    map.addControl(ctrl1);
-
+    map.addControl(ctrlBaseMaps);
+    map.addControl(ctrlOverlayMaps);
+    ctrlProj.addTo(map);
+    
     map.addLayer(layers['meteosat:airmass']);
     map.addLayer(countryBorders);
     map.addLayer(bkgLayer);

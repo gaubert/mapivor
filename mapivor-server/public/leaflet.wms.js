@@ -356,8 +356,8 @@ wms.Overlay = L.Layer.extend({
             overlay.setOpacity(
                 this.options.opacity ? this.options.opacity : 1
             );
+            this.fire('load'); //fire load event
         }
-        this.fire('load');
     },
 
     'setOpacity': function(opacity) {
