@@ -83,6 +83,9 @@ $(document).ready(function() {
 	         //set the first default steps in the time-label
 	    	$('#time-label').text(info[info.default].latest);
 
+	    	// update pos in info to match latest
+	    	info.pos = info[info.default].lastSteps;
+
 	    } else {
 	        //xml = data;
 	        console.log("need to handle that error");
@@ -167,16 +170,19 @@ function setNavigationButtons() {
 		        	// only change layer if we are not at step 0
 			        if (info.pos > 0) {
 			        	info.pos -= 1;
-			        	// update label
-				        $('#time-label').text(info[info.selected].steps[info.pos]);
-
-				        // update layer
-				        var newStep = info[info.selected].steps[info.pos];
-				        $('#time-label').text( newStep);
-				        layers[info.selected].setParams( { time : newStep });
 			        }
+			        else {
+			        	info.pos = info[info.selected].lastSteps;
+			        }
+		        	// update label
+			        $('#time-label').text(info[info.selected].steps[info.pos]);
 
-		    	} else {
+			        // update layer
+			        var newStep = info[info.selected].steps[info.pos];
+			        $('#time-label').text( newStep);
+			        layers[info.selected].setParams( { time : newStep });
+		    	} 
+		    	else {
 		          // throw err
 		    	}
 		    });
@@ -192,16 +198,20 @@ function setNavigationButtons() {
 	        	// only change layer if we are not at step 0
 		        if (info.pos < info[info.selected].lastSteps) {
 		        	info.pos += 1;
-		        	// update label
-			        $('#time-label').text(info[info.selected].steps[info.pos]);
-
-			        // update layer
-			        var newStep = info[info.selected].steps[info.pos];
-			        $('#time-label').text( newStep);
-			        layers[info.selected].setParams( { time : newStep });
 		        }
+		        else  { // reach the end cycle to the beginning of the available time step
+		        	info.pos = 0;
+		        }
+		        
+		        // update label
+			    $('#time-label').text(info[info.selected].steps[info.pos]);
 
-	    	} else {
+			    // update layer
+			    var newStep = info[info.selected].steps[info.pos];
+			    $('#time-label').text( newStep);
+			    layers[info.selected].setParams( { time : newStep });		       
+	    	} 
+	    	else {
 	          // throw err
 	    	}    	
 	    });
