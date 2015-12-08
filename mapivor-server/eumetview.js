@@ -278,6 +278,17 @@ function drawMap(info) {
     var imageFormat = 'image/png8';
     var transparency = 'true';
 
+    // test stereo proj CRS
+    // Create new CRS for EPSG:3573.
+    // Proj4 definition string can be found online.
+    var CRS3395 = new L.Proj.CRS('EPSG3995',
+      '+proj=stere +lat_0=90 +lat_ts=71 +lon_0=0 +k=1 +x_0=0 +y_0=0 +datum=WGS84 +units=m +no_defs', {
+        origin: [0,75],
+        resolutions: [131072, 65536, 32768, 16384, 8192, 4096, 2048]
+    });
+
+    crs = CRS3395;
+
     // backgound layer
     var bkgLayer = L.tileLayer.wms("http://eumetview.eumetsat.int/geoserv/wms", {
         layers: 'bkg-raster:bkg-raster',
@@ -285,9 +296,12 @@ function drawMap(info) {
         transparent: true,
         version: '1.3.0',
         crs: crs,
+        continuousWorld: true,
         zIndex: 0, //lowest zindex
         attribution: "EUMETSAT 2015"
     });
+
+    
 
     // country layer
     var countryBorders = L.tileLayer.wms("http://eumetview.eumetsat.int/geoserv/wms", {
@@ -385,9 +399,11 @@ function drawMap(info) {
 
     // initialize the map
     var map = L.map('map', {
-        center: [0, 0],
+        //center: [0, 0],
+        center: [0,75],
         zoom: 2,
-        crs: L.CRS.EPSG4326,
+        continuousWorld: true,
+        crs: crs
     });
 
     // map control
@@ -425,7 +441,7 @@ function drawMap(info) {
     map.addControl(ctrlOverlayMaps);
     ctrlProj.addTo(map);
     
-    map.addLayer(layers['meteosat:airmass']);
+    //map.addLayer(layers['meteosat:airmass']);
     map.addLayer(countryBorders);
     map.addLayer(bkgLayer);
 
