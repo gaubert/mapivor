@@ -275,7 +275,8 @@ function drawMap(info) {
     //var leafletWMS = require('leaflet.wms');
 
     var crs = L.CRS.EPSG4326;
-    var imageFormat = 'image/png8';
+    //var imageFormat = 'image/png8';
+    var imageFormat = 'image/png';
     var transparency = 'true';
 
     // test stereo proj CRS
@@ -287,7 +288,7 @@ function drawMap(info) {
         resolutions: [131072, 65536, 32768, 16384, 8192, 4096, 2048]
     });
 
-    crs = CRS3395;
+    //crs = CRS3395;
 
     // backgound layer
     var bkgLayer = L.tileLayer.wms("http://eumetview.eumetsat.int/geoserv/wms", {
