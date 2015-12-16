@@ -282,13 +282,13 @@ function drawMap(info) {
     // test stereo proj CRS
     // Create new CRS for EPSG:3573.
     // Proj4 definition string can be found online.
-    var CRS3395 = new L.Proj.CRS('EPSG3995',
+    var CRS3395 = new L.Proj.CRS('EPSG:3995',
       '+proj=stere +lat_0=90 +lat_ts=71 +lon_0=0 +k=1 +x_0=0 +y_0=0 +datum=WGS84 +units=m +no_defs', {
-        origin: [0,75],
-        resolutions: [131072, 65536, 32768, 16384, 8192, 4096, 2048]
+        origin: [0,0],
+        resolutions: [262144, 131072, 65536, 32768, 16384, 8192, 4096, 2048, 1024, 512]
     });
 
-    //crs = CRS3395;
+    crs = CRS3395;
 
     // backgound layer
     var bkgLayer = L.tileLayer.wms("http://eumetview.eumetsat.int/geoserv/wms", {
@@ -297,7 +297,7 @@ function drawMap(info) {
         transparent: true,
         version: '1.3.0',
         crs: crs,
-        continuousWorld: true,
+        //continuousWorld: true,
         zIndex: 0, //lowest zindex
         attribution: "EUMETSAT 2015"
     });
