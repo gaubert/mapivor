@@ -22,99 +22,70 @@ $(document).ready(function() {
  */
 function drawMap(info) {
 
-// backgound layer
-    var bkgLayer = L.tileLayer.wms("http://eumetview.eumetsat.int/geoserv/wms", {
-        layers: 'bkg-raster:bkg-raster',
-        format: imageFormat,
-        transparent: true,
-        version: '1.3.0',
-        crs: crs,
-        //continuousWorld: true,
-        zIndex: 0, //lowest zindex
-        attribution: "EUMETSAT 2015"
-    });
+     var imageFormat = 'image/png';
+     var crs = 'EPSG:4326';
 
-    
+     var proj = ol.proj.get('EPSG:4326');
 
-    // country layer
-    var countryBorders = L.tileLayer.wms("http://eumetview.eumetsat.int/geoserv/wms", {
-        layers: 'overlay:vector-overlay',
-        format: imageFormat,
-        transparent: true,
-        version: '1.3.0',
-        crs: crs,
-        zIndex: 7,  // hihest z index
-        attribution: "EUMETSAT 2015"
-    });
+    // backgound layer
+    var bkgLayer = new ol.layer.Tile({
+        source: new ol.source.TileWMS({
+                url: 'http://eumetview.eumetsat.int/geoserv/wms',
+                params: {
+                    'LAYERS' : 'bkg-raster:bkg-raster', 
+                    'TILED'  : true,
+                    'TRANSPARENT' : true,
+                    'FORMAT' : imageFormat,
+                    'CRS'    : crs,
+                    'VERSION': '1.3.0'
+                },
+                serverType: 'geoserver'
+        })
+    })
 
-    // load a tile layer
-    layers['meteosat:natural'] = L.tileLayer.wms("http://eumetview.eumetsat.int/geoserv/wms", {
-        layers: 'meteosat:natural',
-        format: imageFormat,
-        transparent: true,
-        version: '1.3.0',
-        crs: crs,
-        zIndex: 1,
-        time: info['meteosat:natural'].latest,
-        attribution: "EUMETSAT 2015"
-    });
+    var countryBorderLayer = new ol.layer.Tile({
+        source: new ol.source.TileWMS({
+                url: 'http://eumetview.eumetsat.int/geoserv/wms',
+                params: {
+                    'LAYERS' : 'overlay:vector-overlay', 
+                    'TILED'  : true,
+                    'TRANSPARENT' : true,
+                    'FORMAT' : imageFormat,
+                    'CRS'    : crs,
+                    'VERSION': '1.3.0'
+                },
+                serverType: 'geoserver'
+        })
+    })
 
-    layers['meteosat:airmass'] = L.tileLayer.wms("http://eumetview.eumetsat.int/geoserv/wms", {
-        layers: 'meteosat:airmass',
-        format: imageFormat,
-        transparent: true,
-        version: '1.3.0',
-        crs: crs,
-        zIndex: 1,
-        time: info['meteosat:airmass'].latest,
-        attribution: "EUMETSAT 2015"
-    });
-
-    layers['meteosat:dust'] = L.tileLayer.wms("http://eumetview.eumetsat.int/geoserv/wms", {
-        layers: 'meteosat:dust',
-        format: imageFormat,
-        transparent: true,
-        version: '1.3.0',
-        crs: crs,
-        zIndex: 1,
-        time: info['meteosat:dust'].latest,
-        attribution: "EUMETSAT 2015"
-    });
-
-    // add NonTiled Layers
-    layers['nt:meteosat:airmass'] = L.WMS.overlay("http://eumetview.eumetsat.int/geoserv/wms", {
-        maxZoom: 8,
-        minZoom: 0,
-        layers: 'meteosat:airmass',
-        format: imageFormat,
-        transparent: true,
-        version: '1.3.0',
-        crs: crs,
-        zIndex: 1,
-        time: info['meteosat:airmass'].latest,
-        attribution: "EUMETSAT 2015"
-    });
-    
+    var naturalColorMSGLayer = new ol.layer.Tile({
+        source: new ol.source.TileWMS({
+                url: 'http://eumetview.eumetsat.int/geoserv/wms',
+                params: {
+                    'LAYERS' : 'meteosat:natural', 
+                    'TILED'  : true,
+                    'TRANSPARENT' : true,
+                    'FORMAT' : imageFormat,
+                    'CRS'    : crs,
+                    'VERSION': '1.3.0'
+                },
+                serverType: 'geoserver'
+        })
+    })
 
     var layers = [
-        new ol.layer.Tile({
-          source: new ol.source.MapQuest({layer: 'sat'})
-        }),
-        new ol.layer.Tile({
-          extent: [-13884991, 2870341, -7455066, 6338219],
-          source: new ol.source.TileWMS({
-            url: 'http://demo.boundlessgeo.com/geoserver/wms',
-            params: {'LAYERS': 'topp:states', 'TILED': true},
-            serverType: 'geoserver'
-          })
-        })
+        bkgLayer,
+        naturalColorMSGLayer,
+        countryBorderLayer,
+
       ];
       var map = new ol.Map({
         layers: layers,
         target: 'map',
         view: new ol.View({
-          center: [-10997148, 4569099],
-          zoom: 4
+          projection: proj,
+          center: [0, 0],
+          zoom: 1
         })
       });
 
