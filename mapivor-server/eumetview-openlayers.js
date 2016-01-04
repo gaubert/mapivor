@@ -227,6 +227,52 @@ function setNavigationButtons() {
         });
 };
 
+/*
+  manage the animation when the play button is clicked.
+ */ 
+function startAnimation(info) {
+
+   console.log("station animation");
+   if (! isDefined(info.animate)) {
+
+      info.animate = setInterval(function(){
+        
+            if (animationImgLoaded)
+            {
+              animationImgLoaded = false;
+          console.log("Next interval");
+
+          if (info.pos < info[info.selected].lastSteps) {
+                console.log("animate step " + info.pos);
+                info.pos += 1;
+                
+                // update layer and label
+                var newStep = info[info.selected].steps[info.pos];
+
+                $('#time-label').text( newStep);
+                layersMap[info.selected].getSource().updateParams( { 'TIME' : newStep });
+                layersMap[info.selected].getSource().changed();
+            }
+            else
+            {
+                //reset to pos 0
+                info.pos = 0;
+            }
+          }
+          console.log("do nothing, wait for the image to be loaded");
+      }, animationSpeed);    
+   }
+}
+
+/*
+   Stop the animation mode
+ */
+function stopAnimation(info) {
+  console.log("stop animation");
+  clearInterval(info.animate);
+  info.animate = undefined;
+}
+
 
 /*
   draw the map 
