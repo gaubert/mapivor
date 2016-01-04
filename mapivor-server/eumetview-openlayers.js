@@ -5,10 +5,10 @@ var getCapabilitiesUrl = 'http://localhost:3000/wms-get-capability';
 //var getCapabilitiesUrl = 'http://eumetview.eumetsat.int/geoserv/wms?service=wms&version=1.3.0&request=GetCapabilities';
 
 //  layers: 'meteosat:natural, 'bkg-raster:bkg-raster'],
-var info = { 'default' : 'meteosat:airmass', 'pos' : 0, selected : 'meteosat:airmass' , animate: undefined};
+var info = { 'default' : 'meteosat:natural', 'pos' : 0, selected : 'meteosat:natural' , animate: undefined};
 
 // object containing the layers
-var layers = {};
+var layersMap = {};
 
 // util functions to be moved
 var isDefined = function isDefined(x) {
@@ -183,7 +183,8 @@ function setNavigationButtons() {
                     // update layer
                     var newStep = info[info.selected].steps[info.pos];
                     $('#time-label').text( newStep);
-                    layers[info.selected].setParams( { time : newStep });
+                    layersMap[info.selected].getSource().updateParams( { 'TIME' : newStep });
+                    layersMap[info.selected].getSource().changed();
                 } 
                 else {
                   // throw err
@@ -212,7 +213,9 @@ function setNavigationButtons() {
                 // update layer
                 var newStep = info[info.selected].steps[info.pos];
                 $('#time-label').text( newStep);
-                layers[info.selected].setParams( { time : newStep });              
+                layersMap[info.selected].getSource().updateParams( { 'TIME' : newStep });
+                layersMap[info.selected].getSource().changed();
+
             } 
             else {
               // throw err
@@ -245,10 +248,10 @@ function drawMap(info) {
 
     // backgound layer
     var bkgLayer = new ol.layer.Tile({
-        source: new ol.source.TileWMS({
-                title: 'Earth BaseMap',
+        title: 'Natural Earth',
                 type: 'base',
                 visible: true,
+        source: new ol.source.TileWMS({
                 url: 'http://eumetview.eumetsat.int/geoserv/wms',
                 params: {
                     'LAYERS' : 'bkg-raster:bkg-raster', 
@@ -262,15 +265,16 @@ function drawMap(info) {
         })
     })
 
+    layersMap['bkg-raster:bkg-raster'] = bkgLayer;
+
     // add all basemaps in a group
     var baseMapGroup = new ol.layer.Group({
         'title': 'Base maps',
         layers : [ bkgLayer ]        
-    };
+    });
 
     var countryBorderLayer = new ol.layer.Tile({
         title: 'Country Borders',
-        type: 'base',
         visible: true,
         source: new ol.source.TileWMS({
                 url: 'http://eumetview.eumetsat.int/geoserv/wms',
@@ -286,9 +290,10 @@ function drawMap(info) {
         })
     })
 
+    layersMap['overlay:vector-overlay'] = countryBorderLayer;
+
     var naturalColorMSGLayer = new ol.layer.Tile({
         title: 'Meteosat 2nd Gen Natural Color',
-        type: 'base',
         visible: true,
         source: new ol.source.TileWMS({
                 url: 'http://eumetview.eumetsat.int/geoserv/wms',
@@ -305,10 +310,11 @@ function drawMap(info) {
         })
     })
 
+    layersMap['meteosat:natural'] = naturalColorMSGLayer;
+
     var ntNaturalColorMSGLayer = new ol.layer.Image({
         //extent: [-13884991, 2870341, -7455066, 6338219],       
         title: 'Meteosat 2nd Gen Natural Color FI',
-        type: 'base',
         visible: false,
         source: new ol.source.ImageWMS({
         url: 'http://eumetview.eumetsat.int/geoserv/wms',
@@ -325,13 +331,15 @@ function drawMap(info) {
         })
     });
 
+    layersMap['nt:meteosat:natural'] = ntNaturalColorMSGLayer;
+
     var overlaysGroup = new ol.layer.Group({
         'title': 'Overlays',
-        layers : [  countryBorderLayer, 
-                    naturalColorMSGLayer, 
-                    ntNaturalColorMSGLayer
+        layers : [  naturalColorMSGLayer, 
+                    ntNaturalColorMSGLayer,
+                    countryBorderLayer
                  ]        
-    };
+    });
 
     var layers = [
         baseMapGroup,
@@ -351,7 +359,7 @@ function drawMap(info) {
     var layerSwitcher = new ol.control.LayerSwitcher({
         tipLabel: 'Légende' // Optional label for button
     });
-    
+
     map.addControl(layerSwitcher);
 
 }
