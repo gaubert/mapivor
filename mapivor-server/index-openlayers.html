@@ -4,7 +4,9 @@
   <link rel="stylesheet" href="https://code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
   <link rel="stylesheet" href="http://openlayers.org/en/v3.12.1/css/ol.css" type="text/css">
   <style>
-    #map{ height: 80% }
+    #map{ height: 85% }
+    #toolbox       { position:absolute; top:8px; right:8px; padding:3px; border-radius:4px; color:#fff; background: rgba(255, 255, 255, 0.4); z-index:100; }
+    #layerswitcher { margin:0; padding:10px; border-radius:4px; background:rgba(0, 60, 136, 0.5); list-style-type:none; } 
   </style>
   <style>
   #toolbar {
@@ -20,12 +22,19 @@
 <body>
 
   <div id="map"></div>
+  <div id="toolbox">
+    <ul id="layerswitcher">
+    <li><label><input type="radio" name="layer" value="0" checked> MapQuest Satellite</label></li>
+    <li><label><input type="radio" name="layer" value="1"> MapQuest Hybrid</label></li>
+    <li><label><input type="radio" name="layer" value="2"> MapQuest OSM</label></li>
+    <li><label><input type="radio" name="layer" value="3"> OSM</label></li>
+    </ul>
+  </div>
   <div id="toolbar" class="ui-widget-header ui-corner-all">
 	  <button id="prev">go to beginning</button>
 	  <button id="next">go to end</button>
 	  <button id="play">play</button>
 	  <button id="stop">stop</button>
-
 	  <input type="checkbox" id="time"><label id="time-label" for="time">2015-11-19 04:30 UTC</label></input>
   </div>
 <script src="https://code.jquery.com/jquery-1.10.2.js"></script>

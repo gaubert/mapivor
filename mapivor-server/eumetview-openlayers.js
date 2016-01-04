@@ -25,6 +25,8 @@ $(document).ready(function() {
 
     setNavigationButtons(); // install jquery-ui navigation buttons
 
+    setLayerSwitcher(); // install tempo layer switcher panel
+
     // get capabilities and then draw the map
     fetch(getCapabilitiesUrl).then(function(response) {
         return response.text();
@@ -79,6 +81,24 @@ function parseGetCapabilities(jsonStr) {
           "lastSteps"  : time.length - 1
       };
   });
+}
+
+/* 
+Install layer switcher
+*/
+function switchLayer()
+{ 
+  var checkedLayer = $('#layerswitcher input[name=layer]:checked').val();
+  console.log(layers.toString());
+  for (i = 0, ii = layers.length; i < ii; ++i) {
+    layers[i].setVisible(i==checkedLayer);
+  }
+}
+
+function setLayerSwitcher()
+{
+  $(function() { switchLayer() } );
+  $("#layerswitcher input[name=layer]").change(function() { switchLayer() } );
 }
 
 /*
@@ -302,7 +322,7 @@ function drawMap(info) {
         view: new ol.View({
           projection: proj,
           center: mapCentre,
-          zoom: 2
+          zoom: 3
         })
       });
 
