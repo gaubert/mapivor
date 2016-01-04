@@ -5,10 +5,14 @@ var getCapabilitiesUrl = 'http://localhost:3000/wms-get-capability';
 //var getCapabilitiesUrl = 'http://eumetview.eumetsat.int/geoserv/wms?service=wms&version=1.3.0&request=GetCapabilities';
 
 //  layers: 'meteosat:natural, 'bkg-raster:bkg-raster'],
-var info = { 'default' : 'meteosat:natural', 'pos' : 0, selected : 'meteosat:natural' , animate: undefined};
+var info = { 'default' : 'meteosat:natural', 'pos' : 0, selected : 'nt:meteosat:natural' , animate: undefined};
 
 // object containing the layers
 var layersMap = {};
+
+//default obj containing the information
+var animationSpeed     = 300 // ms. waiting time between each image
+var animationImgLoaded = true; // start at true
 
 // util functions to be moved
 var isDefined = function isDefined(x) {
@@ -80,6 +84,10 @@ function parseGetCapabilities(jsonStr) {
           "steps"      : time,
           "lastSteps"  : time.length - 1
       };
+
+      // add temporarely nt: version of all layers
+      var dummyStr = 'nt:'+val.Name;
+      info[dummyStr] = info[val.Name];
   });
 }
 
@@ -240,9 +248,9 @@ function startAnimation(info) {
             if (animationImgLoaded)
             {
               animationImgLoaded = false;
-          console.log("Next interval");
+              console.log("Next interval");
 
-          if (info.pos < info[info.selected].lastSteps) {
+            if (info.pos < info[info.selected].lastSteps) {
                 console.log("animate step " + info.pos);
                 info.pos += 1;
                 
@@ -340,7 +348,7 @@ function drawMap(info) {
 
     var naturalColorMSGLayer = new ol.layer.Tile({
         title: 'Meteosat 2nd Gen Natural Color',
-        visible: true,
+        visible: false,
         source: new ol.source.TileWMS({
                 url: 'http://eumetview.eumetsat.int/geoserv/wms',
                 params: {
@@ -356,12 +364,27 @@ function drawMap(info) {
         })
     })
 
+    // add tile loading events
+    //asign the listeners on the source of tile layer
+    naturalColorMSGLayer.getSource().on('tileloadstart', function(event) {
+      //replace with your custom action
+      console.log("starting to load tiles");
+     });
+
+    naturalColorMSGLayer.getSource().on('tileloadend', function(event) {
+      console.log("finished to load tiles");
+     });
+
+    naturalColorMSGLayer.getSource().on('tileloaderror', function(event) {
+      console.log("error while loading tiles");
+     });
+
     layersMap['meteosat:natural'] = naturalColorMSGLayer;
 
     var ntNaturalColorMSGLayer = new ol.layer.Image({
         //extent: [-13884991, 2870341, -7455066, 6338219],       
         title: 'Meteosat 2nd Gen Natural Color FI',
-        visible: false,
+        visible: true,
         source: new ol.source.ImageWMS({
         url: 'http://eumetview.eumetsat.int/geoserv/wms',
         params: {
@@ -377,12 +400,31 @@ function drawMap(info) {
         })
     });
 
+    // add image loading events
+    //and now asign the listeners on the source of it
+    var ImgSource = ntNaturalColorMSGLayer.getSource();
+    ImgSource.on('imageloadstart', function(event) {
+        console.log('imageloadstart event',event);
+        animationImgLoaded = false;
+    });
+
+    ImgSource.on('imageloadend', function(event) {
+     console.log('imageloadend event',event);
+     animationImgLoaded = true;
+    });
+
+    ImgSource.on('imageloaderror', function(event) {
+     console.log('imageloaderror event',event);
+    }); 
+
+
     layersMap['nt:meteosat:natural'] = ntNaturalColorMSGLayer;
 
     var overlaysGroup = new ol.layer.Group({
         'title': 'Overlays',
-        layers : [  naturalColorMSGLayer, 
+        layers : [   
                     ntNaturalColorMSGLayer,
+                    naturalColorMSGLayer,
                     countryBorderLayer
                  ]        
     });
