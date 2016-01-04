@@ -84,17 +84,7 @@ app.get('/NonTileLayer.WMS.js', function(req, res) {
 app.get('/map', function(req, res) {
     console.log("in map");
 
-    var filePath = "./index.html";
-
-    var data = fs.readFileSync('./index.html', 'utf8');
-
-    /*fs.readFile(filePath, function (err, data) {
-      if (err) {
-         throw err;
-      }
-      console.log(data);
-      res.send(data);
-  });*/
+    var data = fs.readFileSync('./index-leaflet.html', 'utf8');
 
     console.log(data);
     res.send(data);
