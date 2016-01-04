@@ -3,6 +3,7 @@
   <title>A Leaflet map!</title>
   <link rel="stylesheet" href="https://code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
   <link rel="stylesheet" href="http://openlayers.org/en/v3.12.1/css/ol.css" type="text/css">
+  <link rel="stylesheet" href="../src/ol3-layerswitcher.css" />
   <style>
     #map{ height: 85% }
     #toolbox       { position:absolute; top:8px; right:8px; padding:3px; border-radius:4px; color:#fff; background: rgba(255, 255, 255, 0.4); z-index:100; }
@@ -22,14 +23,14 @@
 <body>
 
   <div id="map"></div>
-  <div id="toolbox">
+  <!--<div id="toolbox">
     <ul id="layerswitcher">
     <li><label><input type="radio" name="layer" value="0" checked> MapQuest Satellite</label></li>
     <li><label><input type="radio" name="layer" value="1"> MapQuest Hybrid</label></li>
     <li><label><input type="radio" name="layer" value="2"> MapQuest OSM</label></li>
     <li><label><input type="radio" name="layer" value="3"> OSM</label></li>
     </ul>
-  </div>
+  </div>-->
   <div id="toolbar" class="ui-widget-header ui-corner-all">
 	  <button id="prev">go to beginning</button>
 	  <button id="next">go to end</button>
@@ -42,6 +43,7 @@
 <script src="http://openlayers.org/en/v3.12.1/build/ol.js"></script>
 <script src="http://cdnjs.cloudflare.com/ajax/libs/proj4js/2.3.6/proj4.js"></script>
 <script src="http://epsg.io/3995.js"></script>
+<script src="/static/ol3/ol3-layerswitcher.js"></script>
 <script src="/static/bundle-openlayers.js"></script>
 </body>
 </html>

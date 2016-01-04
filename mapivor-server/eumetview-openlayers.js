@@ -25,7 +25,7 @@ $(document).ready(function() {
 
     setNavigationButtons(); // install jquery-ui navigation buttons
 
-    setLayerSwitcher(); // install tempo layer switcher panel
+    //setLayerSwitcher(); // install tempo layer switcher panel
 
     // get capabilities and then draw the map
     fetch(getCapabilitiesUrl).then(function(response) {
@@ -243,11 +243,12 @@ function drawMap(info) {
      //var proj = ol.proj.get('EPSG:3995');
      //var mapCentre = ol.proj.fromLonLat([45, 0], proj);
 
-
-
     // backgound layer
     var bkgLayer = new ol.layer.Tile({
         source: new ol.source.TileWMS({
+                title: 'Earth BaseMap',
+                type: 'base',
+                visible: true,
                 url: 'http://eumetview.eumetsat.int/geoserv/wms',
                 params: {
                     'LAYERS' : 'bkg-raster:bkg-raster', 
@@ -261,7 +262,16 @@ function drawMap(info) {
         })
     })
 
+    // add all basemaps in a group
+    var baseMapGroup = new ol.layer.Group({
+        'title': 'Base maps',
+        layers : [ bkgLayer ]        
+    };
+
     var countryBorderLayer = new ol.layer.Tile({
+        title: 'Country Borders',
+        type: 'base',
+        visible: true,
         source: new ol.source.TileWMS({
                 url: 'http://eumetview.eumetsat.int/geoserv/wms',
                 params: {
@@ -277,6 +287,9 @@ function drawMap(info) {
     })
 
     var naturalColorMSGLayer = new ol.layer.Tile({
+        title: 'Meteosat 2nd Gen Natural Color',
+        type: 'base',
+        visible: true,
         source: new ol.source.TileWMS({
                 url: 'http://eumetview.eumetsat.int/geoserv/wms',
                 params: {
@@ -293,7 +306,10 @@ function drawMap(info) {
     })
 
     var ntNaturalColorMSGLayer = new ol.layer.Image({
-        //extent: [-13884991, 2870341, -7455066, 6338219],
+        //extent: [-13884991, 2870341, -7455066, 6338219],       
+        title: 'Meteosat 2nd Gen Natural Color FI',
+        type: 'base',
+        visible: false,
         source: new ol.source.ImageWMS({
         url: 'http://eumetview.eumetsat.int/geoserv/wms',
         params: {
@@ -309,14 +325,20 @@ function drawMap(info) {
         })
     });
 
-    var layers = [
-        bkgLayer,
-        naturalColorMSGLayer,
-        //ntNaturalColorMSGLayer,
-        countryBorderLayer,
+    var overlaysGroup = new ol.layer.Group({
+        'title': 'Overlays',
+        layers : [  countryBorderLayer, 
+                    naturalColorMSGLayer, 
+                    ntNaturalColorMSGLayer
+                 ]        
+    };
 
+    var layers = [
+        baseMapGroup,
+        overlaysGroup
       ];
-      var map = new ol.Map({
+
+    var map = new ol.Map({
         layers: layers,
         target: 'map',
         view: new ol.View({
@@ -324,6 +346,12 @@ function drawMap(info) {
           center: mapCentre,
           zoom: 3
         })
-      });
+    });
+
+    var layerSwitcher = new ol.control.LayerSwitcher({
+        tipLabel: 'Légende' // Optional label for button
+    });
+    
+    map.addControl(layerSwitcher);
 
 }
