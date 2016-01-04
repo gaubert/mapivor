@@ -84,7 +84,27 @@ app.get('/NonTileLayer.WMS.js', function(req, res) {
 app.get('/map', function(req, res) {
     console.log("in map");
 
+    var data = fs.readFileSync('./index-openlayers.html', 'utf8');
+
+    console.log(data);
+    res.send(data);
+
+});
+
+app.get('/map-leaflet', function(req, res) {
+    console.log("in map");
+
     var data = fs.readFileSync('./index-leaflet.html', 'utf8');
+
+    console.log(data);
+    res.send(data);
+
+});
+
+app.get('/map-openlayers', function(req, res) {
+    console.log("in map");
+
+    var data = fs.readFileSync('./index-openlayers.html', 'utf8');
 
     console.log(data);
     res.send(data);
