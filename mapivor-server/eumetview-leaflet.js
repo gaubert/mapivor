@@ -77,14 +77,14 @@ $(document).ready(function() {
 	            };
 	        });
 
-	        //draw the map with layers
-	        drawMap(info);
-
 	         //set the first default steps in the time-label
 	    	$('#time-label').text(info[info.default].latest);
 
 	    	// update pos in info to match latest
 	    	info.pos = info[info.default].lastSteps;
+
+            //draw the map with layers
+            drawMap(info);
 
 	    } else {
 	        //xml = data;
