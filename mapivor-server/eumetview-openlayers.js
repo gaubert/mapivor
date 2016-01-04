@@ -10,6 +10,13 @@ var info = { 'default' : 'meteosat:airmass', 'pos' : 0, selected : 'meteosat:air
 // object containing the layers
 var layers = {};
 
+// util functions to be moved
+var isDefined = function isDefined(x) {
+    var undefined;
+    return x !== undefined;
+};
+
+// end of util functions
 
 /*
   Document ready. Install buttons outside the map for the time navigation
@@ -24,7 +31,7 @@ $(document).ready(function() {
 	drawMap(info);
 });
 
-function getCapabilitiesInfo() {
+function oldGetCapabilitiesInfo() {
     var parser = new ol.format.WMSCapabilities();
 
     fetch(getCapabilitiesUrl).then(function(response) {
@@ -32,6 +39,102 @@ function getCapabilitiesInfo() {
     }).then(function(text) {
         var result = parser.read(text);
         console.log(JSON.stringify(result, null, 2));
+    });
+}
+
+function getCapabilitiesInfo() {
+    fetch(getCapabilitiesUrl).then(function(response) {
+        return response.text();
+    }).then(function(text) {
+       //console.log(jsonStr);
+        if (typeof jsonStr == "string") {
+            // json string to json object
+            var jsonObj = $.parseJSON(jsonStr);
+
+            //use jsonPath to access the object
+            var jsonPath = require('JSONPath');
+            var result = jsonPath.eval(jsonObj, "$..Layer.Layer");
+
+            $.each(result[0], function(index, val) {
+
+                var name = val.Name;
+                var keys = Object.keys(val);
+                var dim = val.Dimension;
+                var time = "";
+                if (isDefined(val.Dimension)) {
+                    time = val.Dimension["_"].split(",");
+                }
+                //console.log("Name: " + val.Name + " latest time:" + time[time.length - 1]);
+                info[val.Name] = {
+                    "latest"     : time[time.length - 1],
+                    "steps"      : time,
+                    "lastSteps"  : time.length - 1
+                };
+            });
+
+             //set the first default steps in the time-label
+            $('#time-label').text(info[info.default].latest);
+
+            // update pos in info to match latest
+            info.pos = info[info.default].lastSteps;
+
+        } else {
+            //xml = data;
+            console.log("need to handle that error");
+        } 
+    });
+}
+
+function old1getCapabilitiesInfo() {
+    
+    // ajax reques to get the GetCapabilities results and then draw the map
+    var getXMLRequest = $.ajax({
+        url: getCapabilitiesUrl,
+        contentType: "text/xml"
+    });
+
+    getXMLRequest.done(function(jsonStr) {
+        //console.log(jsonStr);
+        if (typeof jsonStr == "string") {
+            // json string to json object
+            var jsonObj = $.parseJSON(jsonStr);
+
+            //use jsonPath to access the object
+            var jsonPath = require('JSONPath');
+            var result = jsonPath.eval(jsonObj, "$..Layer.Layer");
+
+            $.each(result[0], function(index, val) {
+
+                var name = val.Name;
+                var keys = Object.keys(val);
+                var dim = val.Dimension;
+                var time = "";
+                if (isDefined(val.Dimension)) {
+                    time = val.Dimension["_"].split(",");
+                }
+                //console.log("Name: " + val.Name + " latest time:" + time[time.length - 1]);
+                info[val.Name] = {
+                    "latest"     : time[time.length - 1],
+                    "steps"      : time,
+                    "lastSteps"  : time.length - 1
+                };
+            });
+
+             //set the first default steps in the time-label
+            $('#time-label').text(info[info.default].latest);
+
+            // update pos in info to match latest
+            info.pos = info[info.default].lastSteps;
+
+        } else {
+            //xml = data;
+            console.log("need to handle that error");
+        }
+    });
+
+    getXMLRequest.fail(function(jqXHR, textStatus) {
+        //console.log( "Ajax request failed... (" + textStatus + ' - ' + jqXHR.responseText ")." );
+        console.log("Ajax request failed... (" + textStatus + ").");
     });
 }
 
@@ -219,6 +322,7 @@ function drawMap(info) {
                     'TRANSPARENT' : true,
                     'FORMAT' : imageFormat,
                     'CRS'    : crs,
+                    'TIME'   : info['meteosat:natural'].latest,
                     'VERSION': '1.3.0'
                 },
                 serverType: 'geoserver'
@@ -235,6 +339,7 @@ function drawMap(info) {
             'TRANSPARENT' : true,
             'FORMAT' : imageFormat,
             'CRS'    : crs,
+            'TIME'   : info['meteosat:natural'].latest,
             'VERSION': '1.3.0'
         },
         serverType: 'geoserver'
