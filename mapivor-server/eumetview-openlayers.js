@@ -22,6 +22,80 @@ $(document).ready(function() {
  */
 function drawMap(info) {
 
+// backgound layer
+    var bkgLayer = L.tileLayer.wms("http://eumetview.eumetsat.int/geoserv/wms", {
+        layers: 'bkg-raster:bkg-raster',
+        format: imageFormat,
+        transparent: true,
+        version: '1.3.0',
+        crs: crs,
+        //continuousWorld: true,
+        zIndex: 0, //lowest zindex
+        attribution: "EUMETSAT 2015"
+    });
+
+    
+
+    // country layer
+    var countryBorders = L.tileLayer.wms("http://eumetview.eumetsat.int/geoserv/wms", {
+        layers: 'overlay:vector-overlay',
+        format: imageFormat,
+        transparent: true,
+        version: '1.3.0',
+        crs: crs,
+        zIndex: 7,  // hihest z index
+        attribution: "EUMETSAT 2015"
+    });
+
+    // load a tile layer
+    layers['meteosat:natural'] = L.tileLayer.wms("http://eumetview.eumetsat.int/geoserv/wms", {
+        layers: 'meteosat:natural',
+        format: imageFormat,
+        transparent: true,
+        version: '1.3.0',
+        crs: crs,
+        zIndex: 1,
+        time: info['meteosat:natural'].latest,
+        attribution: "EUMETSAT 2015"
+    });
+
+    layers['meteosat:airmass'] = L.tileLayer.wms("http://eumetview.eumetsat.int/geoserv/wms", {
+        layers: 'meteosat:airmass',
+        format: imageFormat,
+        transparent: true,
+        version: '1.3.0',
+        crs: crs,
+        zIndex: 1,
+        time: info['meteosat:airmass'].latest,
+        attribution: "EUMETSAT 2015"
+    });
+
+    layers['meteosat:dust'] = L.tileLayer.wms("http://eumetview.eumetsat.int/geoserv/wms", {
+        layers: 'meteosat:dust',
+        format: imageFormat,
+        transparent: true,
+        version: '1.3.0',
+        crs: crs,
+        zIndex: 1,
+        time: info['meteosat:dust'].latest,
+        attribution: "EUMETSAT 2015"
+    });
+
+    // add NonTiled Layers
+    layers['nt:meteosat:airmass'] = L.WMS.overlay("http://eumetview.eumetsat.int/geoserv/wms", {
+        maxZoom: 8,
+        minZoom: 0,
+        layers: 'meteosat:airmass',
+        format: imageFormat,
+        transparent: true,
+        version: '1.3.0',
+        crs: crs,
+        zIndex: 1,
+        time: info['meteosat:airmass'].latest,
+        attribution: "EUMETSAT 2015"
+    });
+    
+
     var layers = [
         new ol.layer.Tile({
           source: new ol.source.MapQuest({layer: 'sat'})
