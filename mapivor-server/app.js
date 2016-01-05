@@ -75,6 +75,16 @@ app.get('/map', function(req, res) {
 
 });
 
+app.get('/pure', function(req, res) {
+    console.log("in map");
+
+    var data = fs.readFileSync('./pure/pure-index.html', 'utf8');
+
+    console.log(data);
+    res.send(data);
+
+});
+
 app.get('/map-leaflet', function(req, res) {
     console.log("in map");
 

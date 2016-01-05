@@ -1,0 +1,92 @@
+body {
+    color: #666;
+}
+
+h1,h2,h3,h4,h5,h6 {
+    color: #153166;
+}
+
+.pure-menu-children .pure-menu-link{
+    color: #153166;
+    font-size: 100%;
+    font-weight: normal;
+}
+
+.pure-menu-link {
+    color: #153166;
+    font-size: 100%;
+    font-weight: bold;
+    padding: 1em 1em;
+}
+
+.pure-menu-heading {
+    color: #153166;
+    font-size: 100%;
+    font-weight: bold;
+}
+
+.l-box {
+    padding: 2em;
+}
+
+.header {
+     max-height: 30px;
+}
+
+.header .pure-menu {
+    border-bottom-color: black;
+    border-radius: 0;
+}
+
+.map-box {
+    overflow: hidden;
+    position: relative;
+    /*height: 500px;*/
+    max-width: 100%;
+    max-height: 100%;
+    min-height: 250px;
+    text-align: center;
+}
+
+.photo-box-thin {
+    height: 120px; 
+}
+
+.text-box {
+    background: rgb(49, 49, 49); /* bluish grey */
+    color: rgb(255, 190, 94); /* steel blue */
+}
+
+    .text-box-head {
+        color: #fff;
+        padding-bottom: 0.2em;
+        font-weight: 400;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        font-size: 24px;
+    }
+
+    .text-box-subhead {
+        font-weight: normal;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+    }
+
+.footer {
+    background: #153166;
+    color: #ffffff;
+    text-align: center;
+    padding: 1em;
+    font-size: 80%;
+    max-height: 3%;
+}
+
+@media (min-width: 30em) {
+    .map-box, .text-box {
+        text-align: left;
+    }
+
+    .photo-box-thin {
+        height: 250px;
+    }
+}

@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="A layout example that shows off a responsive photo gallery.">
+
+    <title>EUMETSAT EUMETView</title>
+    <link rel="stylesheet" href="http://yui.yahooapis.com/pure/0.6.0/pure-min.css">
+
+    <!--[if lte IE 8]>
+        <link rel="stylesheet" href="/static/pure-css/layouts/gallery-grid-old-ie.css">
+    <![endif]-->
+    <!--[if gt IE 8]><!-->
+        <link rel="stylesheet" href="/static/pure-css/layouts/gallery-grid.css">
+    <!--<![endif]-->
+  
+    <!--[if lte IE 8]>
+        <link rel="stylesheet" href="/static/pure-css/layouts/gallery-old-ie.css">
+    <![endif]-->
+    <!--[if gt IE 8]><!-->
+        <link rel="stylesheet" href="/static/pure-css/layouts/gallery.css">
+    <!--<![endif]-->
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
+    <link rel="stylesheet" href="http://openlayers.org/en/v3.12.1/css/ol.css" type="text/css">
+    <link rel="stylesheet" href="/static/ol3/ol3-layerswitcher.css" />
+</head>
+<body>
+<div>
+    <div class="header">
+        <div class="pure-menu pure-menu-horizontal">
+            <a class="pure-menu-heading" href="">EUMETView</a>
+
+            <ul class="pure-menu-list">
+                <li class="pure-menu-item pure-menu-selected"><a href="#" class="pure-menu-link">Home</a></li>
+                <li class="pure-menu-item pure-menu-has-children pure-menu-allow-hover">
+                    <a href="#" id="menuLink1" class="pure-menu-link">Contact</a>
+                    <ul class="pure-menu-children">
+                        <li class="pure-menu-item"><a href="#" class="pure-menu-link">Email</a></li>
+                        <li class="pure-menu-item"><a href="#" class="pure-menu-link">Twitter</a></li>
+                        <li class="pure-menu-item"><a href="#" class="pure-menu-link">Tumblr Blog</a></li>
+                    </ul>
+                </li>
+                <li class="pure-menu-item"><a href="#" class="pure-menu-link">Blog</a></li>
+                <li class="pure-menu-item"><a href="#" class="pure-menu-link">About</a></li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="pure-g">
+        <div class="map-box u-1 u-med-1 u-lrg-1">
+           <div id="map"></div>
+        </div>
+        <div class="u-1 u-med-1 u-lrg-1">
+           <div>
+                <div id="toolbar" class="ui-widget-header ui-corner-all">
+                  <button id="prev">go to beginning</button>
+                  <button id="next">go to end</button>
+                  <button id="play">play</button>
+                  <button id="stop">stop</button>
+                  <input type="checkbox" id="time"><label id="time-label" for="time">2015-11-19 04:30 UTC</label></input>
+                </div>
+            <div>
+        </div>
+    </div>
+    <div class="footer">
+        Made with Love by the EUMETSat Webservices Team.
+    </div>
+</div>
+<script src="https://code.jquery.com/jquery-1.10.2.js"></script>
+<script src="https://code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+<script src="http://openlayers.org/en/v3.12.1/build/ol.js"></script>
+<script src="http://cdnjs.cloudflare.com/ajax/libs/proj4js/2.3.6/proj4.js"></script>
+<script src="http://epsg.io/3995.js"></script>
+<script src="/static/ol3/ol3-layerswitcher.js"></script>
+<script src="/static/bundle-openlayers.js"></script>
+</body>
+</html>

@@ -1,0 +1,78 @@
+body {
+    color: #666;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    color: #111;
+}
+
+.l-box {
+    padding: 2em;
+}
+
+.header .pure-menu {
+    border-bottom-color: black;
+    border-radius: 0;
+}
+
+.pure-menu-link {
+    padding: 1em 1em;
+}
+
+.map-box {
+    overflow: hidden;
+    position: relative;
+    /*height: 250px;*/
+    max-width: 100%;
+    height: auto;
+    min-height: 250px;
+    text-align: center;
+}
+
+.map-box-thin {
+    height: 120px;
+}
+
+.text-box {
+    background: rgb(49, 49, 49);
+    /* bluish grey */
+    color: rgb(255, 190, 94);
+    /* steel blue */
+}
+
+.text-box-head {
+    color: #fff;
+    padding-bottom: 0.2em;
+    font-weight: 400;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-size: 24px;
+}
+
+.text-box-subhead {
+    font-weight: normal;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+}
+
+.footer {
+    background: #111;
+    color: #666;
+    text-align: center;
+    padding: 1em;
+    font-size: 80%;
+}
+
+.map-box,
+.text-box {
+    text-align: left;
+}
+
+.map-box-thin {
+    height: 250px;
+}
