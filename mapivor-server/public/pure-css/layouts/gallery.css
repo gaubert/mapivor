@@ -6,18 +6,27 @@ h1,h2,h3,h4,h5,h6 {
     color: #153166;
 }
 
+#layers {
+    text-align: right;
+    float: right;
+}
+
+/* sub menu link */
 .pure-menu-children .pure-menu-link{
     color: #153166;
     font-size: 100%;
     font-weight: normal;
+    padding: 0.5em 1em;
 }
 
+/* menu heading */
 .pure-menu-link {
     color: #153166;
     font-size: 100%;
     font-weight: bold;
     max-height: 20px;
-    /*padding: 1em 1em;*/
+    padding: 0em 0.5em;
+    margin: 0;
 }
 
 .pure-menu-heading {
