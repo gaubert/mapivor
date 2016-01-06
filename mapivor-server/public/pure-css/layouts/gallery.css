@@ -51,13 +51,13 @@ h1,h2,h3,h4,h5,h6 {
 }
 
 .map-box {
-    overflow: hidden;
-    position: relative;
-    /*height: 500px;*/
+    overflow: auto;
+    position: static;
+    height: 100%;
+    width:  100%;
     max-width: 100%;
     max-height: 100%;
     min-height: 250px;
-    /*text-align: center;*/
 }
 
 .text-box {
@@ -86,7 +86,7 @@ h1,h2,h3,h4,h5,h6 {
     text-align: center;
     padding: 1em;
     font-size: 80%;
-    max-height: 3%;
+    /*max-height: 3%;*/
 }
 
 @media (min-width: 30em) {
