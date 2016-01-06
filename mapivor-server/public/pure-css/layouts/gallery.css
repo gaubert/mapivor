@@ -9,6 +9,7 @@ h1,h2,h3,h4,h5,h6 {
 #layers {
     text-align: right;
     float: right;
+    border: 5px solid black;
 }
 
 /* sub menu link */
@@ -40,11 +41,12 @@ h1,h2,h3,h4,h5,h6 {
 }
 
 .header {
-     max-height: 30px;
+     max-height: 40px;
 }
 
 .header .pure-menu {
     border-bottom-color: black;
+    border-bottom-width: 15px; 
     border-radius: 0;
 }
 
@@ -55,11 +57,7 @@ h1,h2,h3,h4,h5,h6 {
     max-width: 100%;
     max-height: 100%;
     min-height: 250px;
-    text-align: center;
-}
-
-.photo-box-thin {
-    height: 120px; 
+    /*text-align: center;*/
 }
 
 .text-box {
@@ -92,11 +90,12 @@ h1,h2,h3,h4,h5,h6 {
 }
 
 @media (min-width: 30em) {
-    .map-box, .text-box {
+    .text-box {
         text-align: left;
     }
 
-    .photo-box-thin {
-        height: 250px;
+    #layers {
+        text-align: right;
+        float: right;
     }
 }
