@@ -20,25 +20,35 @@ var isDefined = function isDefined(x) {
     return x !== undefined;
 };
 
-function resizeWindow() {
-  $(window).resize(function () {
-      //$('#log').append('<div>Handler for .resize() called.</div>');
-         var canvasheight=$('#map').parent().css('height');
-         var canvaswidth=$('#map').parent().css('width');
-
-         $('#map').css("height", canvasheight);
-         $('#map').css("width", canvaswidth);
-
-   });
-}
 // end of util functions
+/*
+ window resized
+ redraw
+ */
+$(window).resize(function () {
+
+  console.log("RESIZE");
+      
+  var canvasheight=$('#map').parent().css('height');
+  var canvaswidth=$('#map').parent().css('width');
+
+  $('#map').css("height", canvasheight);
+  $('#map').css("width", canvaswidth);
+
+  var map = $('#map').data('map');
+
+  map.updateSize();
+
+  map.render();
+
+  console.log("RESIZED to canvasheight:" + canvasheight + " canvaswidth:" + canvaswidth);
+});
+
 
 /*
   Document ready. Install buttons outside the map for the time navigation
  */
 $(document).ready(function() {
-
-
 
     setNavigationButtons(); // install jquery-ui navigation buttons
 
@@ -456,6 +466,9 @@ function drawMap(info) {
           zoom: 3
         })
     });
+
+    // add map as data in the DOM
+    $('#map').data('map', map);
 
     var layerSwitcher = new ol.control.LayerSwitcher({
         tipLabel: 'Légende' // Optional label for button
