@@ -21,7 +21,6 @@
     <!--[if gt IE 8]><!-->
         <link rel="stylesheet" href="/static/pure-css/layouts/gallery.css">
     <!--<![endif]-->
-
     <link rel="stylesheet" href="https://code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
     <link rel="stylesheet" href="http://openlayers.org/en/v3.12.1/css/ol.css" type="text/css">
     <link rel="stylesheet" href="/static/ol3/ol3-layerswitcher.css" />
@@ -50,26 +49,44 @@
                         <li class="pure-menu-item"><a href="#" class="pure-menu-link">Tumblr Blog</a></li>
                     </ul>
                 </li>
+                <li class="pure-menu-item"><a href="#" class="pure-menu-link">Blog</a></li>
+                <li class="pure-menu-item"><a href="#" class="pure-menu-link">Layers</a></li>
             </ul>
             <ul id="right-menu" class="pure-menu-list">
+                <li class="pure-menu-item pure-menu-selected"><a href="#" class="pure-menu-link">Home</a></li>
+                <li class="pure-menu-item pure-menu-has-children pure-menu-allow-hover">
+                    <a href="#" id="menuLink1" class="pure-menu-link">Contact</a>
+                    <ul class="pure-menu-children">
+                        <li class="pure-menu-item"><a href="#" class="pure-menu-link">Email</a></li>
+                        <li class="pure-menu-item"><a href="#" class="pure-menu-link">Twitter</a></li>
+                        <li class="pure-menu-item"><a href="#" class="pure-menu-link">Tumblr Blog</a></li>
+                    </ul>
+                </li>
+                <li class="pure-menu-item"><a href="#" class="pure-menu-link">Blog</a></li>
                 <li class="pure-menu-item"><a href="#" class="pure-menu-link">Layers</a></li>
             </ul>
         </div>
     </div>
 
     <div class="pure-g">
-        <div class="u-1">
-            <button id="prev">go to beginning</button>
-            <button id="next">go to end</button>
-            <button id="play">play</button>
-            <button id="stop">stop</button>
-            <input type="checkbox" id="time"><label id="time-label" for="time">2015-11-19 04:30 UTC</label></input>
-        </div>
-        <div class="u-1">
-            <div id="map"></div>
+        <div class="map-box u-1">
+           <div id="map"/>
         </div>
     </div>
-    <div class="footer u-1">
+    <!--<div class="pure-g">
+        <div class="time-box u-1">
+           <div>
+                <div id="toolbar" class="ui-widget-header ui-corner-all">
+                  <button id="prev">go to beginning</button>
+                  <button id="next">go to end</button>
+                  <button id="play">play</button>
+                  <button id="stop">stop</button>
+                  <input type="checkbox" id="time"><label id="time-label" for="time">2015-11-19 04:30 UTC</label></input>
+                </div>
+            <div>
+        </div>
+    </div>-->
+    <div class="footer">
             Made with Love by the EUMETSat Webservices Team.
     </div>  
 </body>

@@ -28,20 +28,61 @@ var isDefined = function isDefined(x) {
 $(window).resize(function () {
 
   console.log("RESIZE");
+
+  /* get size from the canvas */
+  var canvasheight=$('#map').parent().parent().css('height');
+  var canvaswidth=$('#map').parent().parent().css('width');
+
+  /* update map size */
+  $('#map').css("height", canvasheight);
+  $('#map').css("width", canvaswidth);
+
+  // get map which wa stored in a DOM data
+  var map = $('#map').data('map');
+
+  // in case we would like to centre on the previously map centre
+  // this will move the map out of the view port
+  //var centreCoords = map.getView().getCenter();
+
+  // update to new size
+  map.updateSize();
+
+  // recenter the map on the previous centre
+  var size = map.getSize();
+
+  var viewpos = [size[0]/2, size[1]/2];
+
+  var view = map.getView();
+  view.centerOn(
+      [0,0],  // this depends on the projection (if north polar then [-90,0])
+      size,
+      viewpos
+  );
+
       
-  var canvasheight=$('#map').parent().css('height');
-  var canvaswidth=$('#map').parent().css('width');
+  /*var canvasheight=$('#map').parent().parent().css('height');
+  var canvaswidth=$('#map').parent().parent().css('width');
 
   $('#map').css("height", canvasheight);
   $('#map').css("width", canvaswidth);
 
   var map = $('#map').data('map');
 
+  var centreCoords = map.getView().getCenter();
+
   map.updateSize();
+
+  centreCoords = map.getView().getCenter();
+
+  map.getView().setCenter([0,0]);
 
   map.render();
 
-  console.log("RESIZED to canvasheight:" + canvasheight + " canvaswidth:" + canvaswidth);
+  centreCoords = map.getView().getCenter();
+
+
+  console.log("RESIZED to canvasheight:" + canvasheight + " canvaswidth:" + canvaswidth);*/
+
 });
 
 
@@ -74,11 +115,9 @@ $(document).ready(function() {
         } else {
             throw new Error('Error: The returned response is not a string' + jsonStr);
         } 
-    })
-    .catch(function() {
+    }).catch(function(msg) {
       throw new Error('Cannot request getCapabilities from' + getCapabilitiesUrl);
     });
-    ;
 });
 
 /*
@@ -458,12 +497,15 @@ function drawMap(info) {
       ];
 
     var map = new ol.Map({
+        interactions: ol.interaction.defaults({mouseWheelZoom:false}),
         layers: layers,
         target: 'map',
         view: new ol.View({
           projection: proj,
           center: mapCentre,
-          zoom: 3
+          zoom: 3,
+          minZoom: 3,
+          maxZoom: 7
         })
     });
 
@@ -475,5 +517,7 @@ function drawMap(info) {
     });
 
     map.addControl(layerSwitcher);
+
+    console.log("Map size = " +map.getSize());
 
 }

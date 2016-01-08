@@ -85,6 +85,16 @@ app.get('/pure', function(req, res) {
 
 });
 
+app.get('/skeleton', function(req, res) {
+    console.log("in map");
+
+    var data = fs.readFileSync('./skeleton/index-skeleton.html', 'utf8');
+
+    console.log(data);
+    res.send(data);
+
+});
+
 app.get('/bare-pure', function(req, res) {
     console.log("in map");
 
