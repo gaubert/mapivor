@@ -29,13 +29,29 @@ $(window).resize(function () {
 
   console.log("RESIZE");
 
+  //get the window height and width
+  var h = $(window).height();
+  var w = $(window).width();
+
   /* get size from the canvas */
-  var canvasheight=$('#map').parent().parent().css('height');
-  var canvaswidth=$('#map').parent().parent().css('width');
+  var canvasheight=$('#map').parent().parent().height();
+  var canvaswidth =$('#map').parent().parent().width();
+
+  console.log("h=" +h + ",w="+w+"canvasheight="+canvasheight+"canvaswidth="+canvaswidth);
+
+  if (canvaswidth > w)
+  {
+    canvaswidth = w;
+  }
+
+  if (canvasheight > h)
+  {
+    canvasheight = h;
+  }
 
   /* update map size */
-  $('#map').css("height", canvasheight);
-  $('#map').css("width", canvaswidth);
+  $('#map').css("height", canvasheight.toString() + "px");
+  $('#map').css("width",  canvaswidth.toString() + "px");
 
   // get map which wa stored in a DOM data
   var map = $('#map').data('map');
@@ -59,6 +75,11 @@ $(window).resize(function () {
       viewpos
   );
 
+  map.render();
+
+  size = map.getSize();
+
+  console.log("new size =" + size);
       
   /*var canvasheight=$('#map').parent().parent().css('height');
   var canvaswidth=$('#map').parent().parent().css('width');
