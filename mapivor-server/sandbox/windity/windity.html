@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Windyty, wind map &amp; forecast</title>
+    <base href="/">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+    <link href="./windity.css" rel="stylesheet" type="text/css">
+    <script src="/gfs/minifest.js"></script>
+    <script>
+    var W = {
+        version: '5.2.6'
+    }
+    </script>
+    <script src="/js/leaflet3D.v0.js"></script>
+    <script src="/v5.2.6/final.js?timestamp=1054"></script>
+    <meta name="description" content="Wind map and weather forecast for kiters, surfers, pilots, sailors and anyone else. Worldwide animated weather map, with easy to use overlays and precise spot forecast. METAR, TAF and NOTAMs for any airport in the World.">
+    <meta name="keywords" content="Windyty, wind map, windfinder, windguru, wind forecast, weather forecast, GFS">
+    <meta name="author" content="IL">
+    <meta name="copyright" content="Creative Commons">
+    <meta name="application-name" content="Windyty.com">
+    <meta property="og:title" content="Windyty, wind forecast">
+    <meta property="og:type" content="article">
+    <meta property="og:image" content="https://www.windyty.com/img/socialshare3.jpg">
+    <meta property="og:url" content="https://www.windyty.com">
+    <meta property="og:description" content="Ubercool wind animation all over the world. Wind and weather forecast for kiters, surfers, pilots and anyone else.">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Windyty, wind forecast">
+    <meta name="twitter:site" content="@windytycom">
+    <meta name="twitter:creator" content="@windytycom">
+    <meta name="twitter:description" content="Ubercool wind animation all over the world. Wind and weather forecast for kiters, surfers, pilots and anyone else.">
+    <meta name="twitter:image" content="https://www.windyty.com/img/socialshare3.jpg">
+    <link rel="apple-touch-icon" sizes="57x57" href="img/favicons/apple-touch-icon-57x57.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="img/favicons/apple-touch-icon-114x114.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="img/favicons/apple-touch-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="img/favicons/apple-touch-icon-144x144.png">
+    <link rel="apple-touch-icon" sizes="60x60" href="img/favicons/apple-touch-icon-60x60.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="img/favicons/apple-touch-icon-120x120.png">
+    <link rel="apple-touch-icon" sizes="76x76" href="img/favicons/apple-touch-icon-76x76.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="img/favicons/apple-touch-icon-152x152.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="img/favicons/apple-touch-icon-180x180.png">
+    <meta name="msapplication-TileColor" content="#666666">
+    <meta name="msapplication-TileImage" content="img/favicons/mstile-144x144.png">
+    <meta name="msapplication-config" content="img/favicons/browserconfig.xml">
+</head>
+
+<body id="body">
+    <div id="map_container"></div>
+    <div id="globe_container" class="full-screen" style="opacity: 0">
+        <canvas id="globeCanvas4" class="full-screen"></canvas>
+        <canvas id="globeCanvas0" class="full-screen nomouse"></canvas>
+        <canvas id="globeCanvas1" class="full-screen nomouse"></canvas>
+        <canvas id="globeCanvas2" class="full-screen nomouse"></canvas>
+        <canvas id="globeCanvas3" class="full-screen nomouse"></canvas>
+        <div class="leaflet-control-container leaflet-top leaflet-right shy">
+            <div class="leaflet-control-zoom leaflet-bar leaflet-control"><a id="globe_plus" class="leaflet-control-zoom-in" title="Zoom in">+</a> <a id="globe_minus" class="leaflet-control-zoom-out" title="Zoom out">-</a></div>
+        </div>
+        <div class="popup-wrapper" style="position: absolute; display: none">
+            <div class="popup">
+                <div class="popup-draggable-square">
+                    <div class="popup-ball"></div>
+                </div>
+            </div>
+            <div class="popup-content"></div>
+            <a class="popup-link shy" data-t="DETAILED"></a> <a class="popup-close-button shy" style="right: 0">Ã</a>
+            <div class="popup--
+drag-me" data-t="DRAG_ME"></div>
+        </div>
+    </div>
+    <div id="header-container" class="shy">
+        <div id="title" title="Windyty, wind forecast">:</div><img id="loader-all" class="loader" width="19" height="8">
+        <div id="search">
+            <input type="text" id="q" autocomplete="off" spellcheck="false" data-placeholder="SEARCH">
+            <div id="recents"></div>
+            <div id="results">
+                <div id="results-data"></div><img data-name="hit"> <img id="results-loader" src="img/ajax-loader.gif"></div>
+        </div>
+    </div>
+    <div id="navmenu" data-title="MENU" class="shy">d</div>
+    <div id="bottom" class="shy">
+        <form id="windyty-ui"><a id="mb-info" href="https://www.meteoblue.com/">Showing detailed 4x4km forecast from <img src="/img/logo-mb.svg"></a>
+            <div id="historical">
+                <div data-name="initCalendar" data-t="SHOW_ACTUAL"></div>
+            </div>
+            <div class="play" id="playpause-mobile" data-name="play"></div>
+            <div id="progress-bar-wrapper" class="show_on_startup">
+                <div id="progress-bar">
+                    <div id="progress">
+                        <div id="progress-inset">
+                            <div id="progress-line" class="played"></div>
+                            <div id="ghost-timecode">
+                                <div id="ghost-box" class="box"></div>
+                            </div>
+                            <div id="timecode" data-title="D_LT2" class="timecode">
+                                <div id="timecode-box" class="box"></div><img id="loader-path" class="loader" width="19" height="8"></div>
+                        </div>
+                    </div>
+                    <div class="calendar-wrapper">
+                        <div class="play" id="playpause" data-name="play"></div>
+                        <div id="calendar"></div>
+                    </div>
+                </div>
+            </div>
+            <div id="accumulations"><span id="acc-title-rain" data-t="RAINACCU"></span> <span id="acc-title-snow" data-t="SNOWACCU"></span> <img id="loader-acTime" class="loader" width="19" height="8">
+                <div id="acc-div">
+                    <div data-name="acTime" data-value="past3d" data-t="ACC_LAST_DAYS|num:3"></div>
+                    <div data-name="acTime" data-value="past24h" data-t="ACC_LAST_HOURS|num:24"></div>
+                    <div data-name="acTime" data-value="next24h" data-t="ACC_NEXT_HOURS|num:24"></div>
+                    <div data-name="acTime" data-value="next3d" data-t="ACC_NEXT_DAYS|num:3"></div>
+                    <div data-name="acTime" data-value="next" data-t="ACC_NEXT_DAYS|num:10"></div>
+                </div>
+                <div class="snowcover-btn" id="snowcover-btn" data-name="snowcover" data-t="SNOWCOVER"></div>
+            </div>
+            <div id="settings">
+                <div id="messages">
+                    <div id="message-nems" data-t="MESSAGE_NEMS4"></div>
+                </div>
+                <div id="productinfo"></div>
+                <div id="small-toolbox"><span id="particles" data-name="particles" data-title="TOOLBOX_START" data-t="TOOLBOX_ANIMATION"></span> <span id="model-info" data-t="TOOLBOX_INFO"></span></div>
+                <div id="datetime" class="item">
+                    <t data-t="DATE_AND_TIME"></t><img id="loader-path2" class="loader" width="19" height="8">
+                    <br>
+                    <select class="calendar-select" name="path"></select>
+                    <select id="acc-select" class="actime-select" name="acTime">
+                        <option value="past3d" data-t="ACC_LAST_DAYS|num:3"></option>
+                        <option value="past24h" data-t="ACC_LAST_HOURS|num:24"></option>
+                        <option value="next24h" data-t="ACC_NEXT_HOURS|num:24"></option>
+                        <option value="next3d" data-t="ACC_NEXT_DAYS|num:3"></option>
+                        <option value="next" data-t="ACC_NEXT_DAYS|num:10"></option>
+                    </select>
+                </div>
+                <div id="overlays" class="item"><span id="overlaytxt" data-t="OVERLAY"></span> <img id="loader-overlay" class="loader" width="19" height="8">
+                    <br>
+                    <select id="overlay-select" name="overlay">
+                        <option value="wind" data-t="WIND"></option>
+                        <option value="gust" data-t="GUST"></option>
+                        <option value="temp" data-t="TEMP"></option>
+                        <option value="clouds" data-t="CLOUDS"></option>
+                        <option value="rain" data-t="RACCU"></option>
+                        <option value="lclouds" data-t="LCLOUDS"></option>
+                        <option value="waves" data-t="WAVES"></option>
+                        <option value="wwaves" data-t="WWAVES"></option>
+                        <option value="swell" data-t="SWELL"></option>
+                        <option value="swellperiod" data-t="SWELLPER"></option>
+                        <option value="snow" data-t="SNOW"></option>
+                        <option value="pressure" data-t="PRESS"></option>
+                        <option value="rh" data-t="RH"></option>
+                    </select>
+                    <div id="radios">
+                        <div>
+                            <input type="radio" name="overlay" value="wind"><span id="overlayGroupSpan1" data-name="overlayGroup" data-value="1" data-t="WIND"></span></div>
+                        <div class="radio-inset" id="overlayGroup1">
+                            <div>
+                                <input type="radio" name="overlay" value="gust">
+                                <t data-t="GUST"></t>
+                            </div>
+                        </div>
+                        <div>
+                            <input type="radio" name="overlay" value="temp">
+                            <t data-t="TEMP"></t>
+                        </div>
+                        <div>
+                            <input type="radio" name="overlay" value="clouds"><span id="overlayGroupSpan2" data-name="overlayGroup" data-value="2" data-t="CLOUDS"></span></div>
+                        <div class="radio-inset" id="overlayGroup2">
+                            <div>
+                                <input type="radio" name="overlay" value="rh">
+                                <t data-t="RH"></t>
+                            </div>
+                            <div>
+                                <input type="radio" name="overlay" value="lclouds">
+                                <t data-t="LCLOUDS"></t>
+                            </div>
+                            <div class="not-hist">
+                                <input type="radio" name="overlay" value="rain">
+                                <t data-t="RACCU"></t>
+                            </div>
+                        </div>
+                        <div class="not-hist">
+                            <input type="radio" name="overlay" value="waves"><span id="overlayGroupSpan3" data-name="overlayGroup" data-value="3" data-t="WAVES"></span></div>
+                        <div class="not-hist radio-inset" id="overlayGroup3">
+                            <div>
+                                <input type="radio" name="overlay" value="wwaves">
+                                <t data-t="WWAVES"></t>
+                            </div>
+                            <div>
+                                <input type="radio" name="overlay" value="swell">
+                                <t data-t="SWELL"></t>
+                            </div>
+                            <div>
+                                <input type="radio" name="overlay" value="swellperiod">
+                                <t data-t="SWELLPER"></t>
+                            </div>
+                        </div>
+                        <div class="not-hist">
+                            <input type="radio" name="overlay" value="snow">
+                            <t data-t="SNOW"></t>
+                        </div>
+                        <div>
+                            <input type="radio" name="overlay" value="pressure">
+                            <t data-t="PRESS"></t>
+                        </div>
+                    </div>
+                </div>
+                <div class="item" id="level-desc" data-title="AMSL">
+                    <t data-t="ALTITUDE"></t><img id="loader-level" class="loader" width="19" height="8">
+                    <br>
+                    <select id="level-select" name="level">
+                        <option value="surface" data-t="SFC"></option>
+                        <option value="975h">300m, 1000ft</option>
+                        <option value="950h">600m, 2000ft</option>
+                        <option value="925h">750m, 2500ft</option>
+                        <option value="900h">900m, 3000ft</option>
+                        <option value="850h">1500m, 5000ft</option>
+                        <option value="750h">2400m, 8000ft</option>
+                        <option value="700h">3000m, FL100</option>
+                        <option value="550h">4800m, FL160</option>
+                        <option value="450h">6000m, FL200</option>
+                        <option value="350h">8000m, FL260</option>
+                        <option value="300h">9000m, FL300</option>
+                        <option value="250h">10km, FL340</option>
+                        <option value="200h">11.7km, FL390</option>
+                        <option value="150h">13.5km, FL450</option>
+                    </select>
+                </div>
+                <div id="mbselector">
+                    <div data-name="model" data-value="gfs">GFS 12km</div>
+                    <div data-name="model" data-value="mbeurope">NEMS 4km</div>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div id="legend" class="shy" data-title="CLICK_ON_LEGEND"></div>
+    <div id="menu" class="shy"><a id="lupa" class="mobileonly"><span>q</span></a> <a class="mobilehide" id="community-icon" data-title="MENU_COMMUNITY"><span style="padding-right: 0; letter-spacing: 0.6em; margin-right: -8px">EA</span> <b data-t="MENU_COMMUNITY"></b></a> <a class="mobilehide" href="http://forum.windyty.com/category/5/frequently-asked-questions" data-title="MENU_HELP"><span>.</span><b data-t="MENU_HELP"></b></a> <a class="mobilehide" id="tools-icon" data-title="MENU_TOOLS"><span>)</span><b data-t="MENU_TOOLS"></b></a> <a class="mobileonly" id="location-icon" data-title="MENU_LOCATION"><span>j</span></a> <a id="settings-icon" data-title="MENU_SETTINGS"><span>1</span><b class="mobilehide" data-t="MENU_SETTINGS"></b></a></div>
+    <div id="plugins"></div>
+    <div id="bottom-credits" class="not-shy" data-t="DEVELOPED"></div>
+    <canvas id="jpg_decoder" style="display: none"></canvas>
+    <div id="intent" class="not-supported" style="display: none">Android browser is not supported. Please launch Windyty in Chrome or Firefox browser [ <span>close</span> ]</div>
+    <div id="not-supported" class="not-supported" style="display:none">Your browser is not supported. Please use Chrome, Firefox, Safari or Internet Explorer 11 or later</div>
+    <script>
+    // GOOGLE ANALYTICS
+    (function(i, s, o, g, r, a, m) {
+        i['GoogleAnalyticsObject'] = r;
+        i[r] = i[r] || function() {
+            (i[r].q = i[r].q || []).push(arguments)
+        }, i[r].l = 1 * new Date();
+        a = s.createElement(o),
+            m = s.getElementsByTagName(o)[0];
+        a.async = 1;
+        a.src = g;
+        m.parentNode.insertBefore(a, m)
+    })(window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga');
+    // DEBUG - code for beta version
+    //ga('create', 'UA-56263486-6', 'auto');
+    //For illegally embeded pages, use different measurement code
+    if (window.top !== window.self)
+        ga('create', 'UA-56263486-2', 'auto'); //code for embed
+    else
+        ga('create', 'UA-56263486-1', 'www.windyty.com'); //regular code
+    </script>
+</body>
+
+</html>
