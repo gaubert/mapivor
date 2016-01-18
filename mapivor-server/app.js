@@ -85,6 +85,16 @@ app.get('/pure', function(req, res) {
 
 });
 
+app.get('/wind', function(req, res) {
+    console.log("in wind");
+
+    var data = fs.readFileSync('./sandbox/windity/mywindity.html', 'utf8');
+
+    console.log(data);
+    res.send(data);
+
+});
+
 app.get('/skeleton', function(req, res) {
     console.log("in map");
 
