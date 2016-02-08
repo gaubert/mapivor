@@ -6,11 +6,11 @@ var isDefined = function isDefined(x) {
     return x !== undefined;
 };
 
-var width = 960,
-    height = 500;
+var width = 1152,
+    height = 600;
 
 var orthographic = d3.geo.orthographic()
-    .scale(250)
+    .scale(300)
     .translate([width / 2, height / 2])
     .clipAngle(90);
 
@@ -24,6 +24,50 @@ var lambda = d3.scale.linear()
 var  omega = d3.scale.linear()
     .domain([0, height])
     .range([90, -90]);
+
+var svg = d3.select("body").append("svg")
+    .attr("width", width)
+    .attr("height", height);
+
+var mousedown = false;
+
+// 960 => 500 
+// 1152 => 600
+
+
+// check http://www.web-maps.com/gisblog/?p=1370 for more info
+
+svg.on("mousemove", function() {
+  
+  if (mousedown)
+  {
+    var p = d3.mouse(this);
+    orthographic.rotate([lambda(p[0]), omega(p[1])]);
+    svg.selectAll("path").attr("d", path);
+  }
+  
+});
+
+svg.on("mousedown", function() {
+
+  mousedown = true;
+  console.log("mousedown " + mousedown);
+});
+
+svg.on("mouseup", function() {
+
+  mousedown = false;
+  console.log("mousedown " + mousedown);
+});
+
+d3.json("http://localhost:3000/static/world-110m.json", function(error, world) {
+  if (error) throw error;
+
+  svg.append("path")
+      .datum(topojson.feature(world, world.objects.land))
+      .attr("class", "land")
+      .attr("d", path);
+});
 
 // Create and configure the Equirectancular projection
 var equirectangular = d3.geo.equirectangular()
@@ -41,6 +85,7 @@ var context = canvas.node().getContext('2d');
 // Create the image element
 var image = new Image;
 image.src = 'http://localhost:3000/static/world.5400x2700.jpg';
+
 
 image.onload = function() {
     console.log("Begin image.onload()");
@@ -96,11 +141,11 @@ image.onload = function() {
     console.log("End image.onload()");
 };
 
- // Add an event listener for the mousemove event
+// Add an event listener for the mousemove event
 canvas.on('mousemove', function(d) {
 
         // Retrieve the mouse position relative to the canvas
-        var pos = d3.mouse(this);
+        //var pos = d3.mouse(this);
 
         // Compute the coordinates of the current position
         //var coords = equirectangular.invert(pos);
@@ -112,6 +157,30 @@ canvas.on('mousemove', function(d) {
         //context.clearRect(2, 2, 90, 14);
         //context.fillText(label, 4, 12);
 });
+
+
+/*canvas.on("mousemove", function() {
+  
+  if (mousedown)
+  {
+    var p = d3.mouse(this);
+    orthographic.rotate([lambda(p[0]), omega(p[1])]);
+    svg.selectAll("path").attr("d", path);
+  }
+  
+});
+
+svg.on("mousedown", function() {
+
+  mousedown = true;
+  console.log("mousedown " + mousedown);
+});
+
+svg.on("mouseup", function() {
+
+  mousedown = false;
+  console.log("mousedown " + mousedown);
+});*/
 
 
 $(document).ready(function () {
