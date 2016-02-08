@@ -95,6 +95,18 @@ app.get('/wind', function(req, res) {
 
 });
 
+app.get('/d3', function(req, res) {
+    console.log("in d3");
+
+    var data = fs.readFileSync('./index-d3.html', 'utf8');
+
+    console.log(data);
+    res.send(data);
+
+});
+
+
+
 app.get('/skeleton', function(req, res) {
     console.log("in map");
 

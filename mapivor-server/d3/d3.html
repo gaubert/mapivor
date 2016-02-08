@@ -28,6 +28,23 @@ var svg = d3.select("body").append("svg")
     .attr("width", width)
     .attr("height", height);
 
+var canvas = d3.select("body").append('canvas')
+        .attr('width', width)
+        .attr('height', height);
+
+var context = canvas.node().getContext('2d');
+
+// Create the image element
+var image = new Image;
+
+image.onload = onLoad;
+image.src = '/chapter11/data/world.jpg';
+
+// Copy the image to the canvas context
+functiononLoad() {
+    context.drawImage(image, 0, 0, image.width, image.height, 0, 0, width, height);
+}
+
 svg.on("mousemove", function() {
   var p = d3.mouse(this);
   projection.rotate([lambda(p[0]), omega(p[1])]);
