@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<body>
+<script src="http://d3js.org/d3.v3.min.js"></script>
+<script src="http://d3js.org/topojson.v1.min.js"></script>
+<div id="aCanvas"></div>
+<script>
+
+var width = 960,
+    height = 500;
+
+var projection = d3.geo.orthographic()
+    .scale(250)
+    .translate([width / 2, height / 2])
+    .clipAngle(90);
+
+var path = d3.geo.path()
+    .projection(projection);
+
+var lambda = d3.scale.linear()
+    .domain([0, width])
+    .range([-180, 180]);
+
+var  omega = d3.scale.linear()
+    .domain([0, height])
+    .range([90, -90]);
+
+var svg = d3.select("body").append("svg")
+    .attr("width", width)
+    .attr("height", height);
+
+svg.on("mousemove", function() {
+  var p = d3.mouse(this);
+  projection.rotate([lambda(p[0]), omega(p[1])]);
+  svg.selectAll("path").attr("d", path);
+});
+
+d3.json("https://raw.githubusercontent.com/mbostock/topojson/master/examples/world-110m.json", function(error, world) {
+  if (error) throw error;
+
+  svg.append("path")
+      .datum(topojson.feature(world, world.objects.land))
+      .attr("class", "land")
+      .attr("d", path);
+});
+
+//maybenot useful
+// Append the canvas element to the container div
+//var div = d3.select('#aCannvas');
+
+var canvas = document.createElement('canvas');
+canvas.id     = "aCanvas";
+canvas.width  = width;
+canvas.height = height;
+document.body.appendChild(canvas);
+//canvas.style.zIndex   = 8;
+//canvas.style.position = "absolute";
+//canvas.style.border   = "1px solid";
+
+//var canvas = div.append('canvas').attr('width', width).attr('height', height);
+
+// Get the 2D context of the canvas instance
+var context = canvas.getContext('2d');
+
+// Create the image element
+var image = new Image;
+image.onload = onLoad;
+//image.src    = 'http://vwids.eumetsat.int/geoserv/wms?SERVICE=WMS&REQUEST=GetMap&TRANSPARENT=TRUE&EXCEPTIONS=INIMAGE&VERSION=1.3.0&LAYERS=meteosat%3Air108%2Coverlay%3Avector-overlay&STYLES=raster%2C&SRS=EPSG%3A4326&WIDTH=960&HEIGHT=500&BBOX=-90,-180,90,180&FORMAT=image%2Fjpeg&TIME=2016-01-19T12%3A00%3A00.000Z&';
+image.src = 'http://localhost:3000/static/img/meteosat-ir108_overlay-vector-overlay.jpg'
+
+function onLoad() {
+ 
+        var dx = image.width,
+            dy = image.height;
+ 
+        context.drawImage(image, 0, 0, dx, dy);
+ 
+        var sourceData = context.getImageData(0, 0, dx, dy).data,
+            target     = context.createImageData(width, height),
+            targetData = target.data;
+ 
+        for (var y = 0, i = -1; y < height; ++y) {
+            for (var x = 0; x < width; ++x) {
+                var p = projection.invert([x, y]), λ = p[0], φ = p[1];
+                if (λ > 180 || λ < -180 || φ > 90 || φ < -90) { i += 4; continue; }
+                var q = ((90 - φ) / 180 * dy | 0) * dx + ((180 + λ) / 360 * dx | 0) << 2;
+                targetData[++i] = sourceData[q];
+                targetData[++i] = sourceData[++q];
+                targetData[++i] = sourceData[++q];
+                targetData[++i] = 255;
+            }
+        }
+        context.clearRect(0, 0, width, height);
+        context.putImageData(target, 0, 0);
+};
+
+</script>
+
+</body>
