@@ -81,9 +81,9 @@ function onLoad() {
  
         for (var y = 0, i = -1; y < height; ++y) {
             for (var x = 0; x < width; ++x) {
-                var p = projection.invert([x, y]), λ = p[0], φ = p[1];
-                if (λ > 180 || λ < -180 || φ > 90 || φ < -90) { i += 4; continue; }
-                var q = ((90 - φ) / 180 * dy | 0) * dx + ((180 + λ) / 360 * dx | 0) << 2;
+                var p = projection.invert([x, y]), lambda = p[0], phi = p[1];
+                if (lambda > 180 || lambda < -180 || phi > 90 || phi < -90) { i += 4; continue; }
+                var q = ((90 - phi) / 180 * dy | 0) * dx + ((180 + lambda) / 360 * dx | 0) << 2;
                 targetData[++i] = sourceData[q];
                 targetData[++i] = sourceData[++q];
                 targetData[++i] = sourceData[++q];
