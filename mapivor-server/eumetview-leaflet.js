@@ -338,6 +338,50 @@ function drawMap(info) {
         attribution: "EUMETSAT 2015"
     });
 
+    layers['copernicus:sentinel3a_olci_level1rgb_redres_platecarre'] = L.tileLayer.wms("http://eumetview.eumetsat.int/geoserv/wms", {
+        layers: 'copernicus:sentinel3a_olci_level1rgb_redres_platecarre',
+        format: imageFormat,
+        transparent: true,
+        version: '1.3.0',
+        crs: crs,
+        zIndex: 1,
+        time: info['copernicus:sentinel3a_olci_level1rgb_redres_platecarre'].latest,
+        attribution: "EUMETSAT 2015"
+    });
+
+    layers['copernicus:sentinel3a_olci_oceancolor_redres_platecarre'] = L.tileLayer.wms("http://eumetview.eumetsat.int/geoserv/wms", {
+        layers: 'copernicus:sentinel3a_olci_oceancolor_redres_platecarre',
+        format: imageFormat,
+        transparent: true,
+        version: '1.3.0',
+        crs: crs,
+        zIndex: 1,
+        time: info['copernicus:sentinel3a_olci_oceancolor_redres_platecarre'].latest,
+        attribution: "EUMETSAT 2015"
+    });
+
+    layers['copernicus:sentinel3a_slstr_nadir_day_platecarree'] = L.tileLayer.wms("http://eumetview.eumetsat.int/geoserv/wms", {
+        layers: 'copernicus:sentinel3a_slstr_nadir_day_platecarree',
+        format: imageFormat,
+        transparent: true,
+        version: '1.3.0',
+        crs: crs,
+        zIndex: 1,
+        time: info['copernicus:sentinel3a_slstr_nadir_day_platecarree'].latest,
+        attribution: "EUMETSAT 2015"
+    });
+
+    layers['copernicus:sentinel3a_slstr_ir_nadir_platecarree'] = L.tileLayer.wms("http://eumetview.eumetsat.int/geoserv/wms", {
+        layers: 'copernicus:sentinel3a_slstr_ir_nadir_platecarree',
+        format: imageFormat,
+        transparent: true,
+        version: '1.3.0',
+        crs: crs,
+        zIndex: 1,
+        time: info['copernicus:sentinel3a_slstr_ir_nadir_platecarree'].latest,
+        attribution: "EUMETSAT 2015"
+    });
+
     layers['meteosat:msg_dust'] = L.tileLayer.wms("http://eumetview.eumetsat.int/geoserv/wms", {
         layers: 'meteosat:msg_dust',
         format: imageFormat,
@@ -415,6 +459,10 @@ function drawMap(info) {
         "NT Meteosat Airmass"      : layers['nt:meteosat:msg_airmass'],
         "NT Meteosat Natural"      : layers['nt:meteosat:msg_natural'],
         "NT Meteosat Dust"         : layers['nt:meteosat:msg_dust'],
+        "OLCI L1 RGB"              : layers['copernicus:sentinel3a_olci_level1rgb_redres_platecarre'],
+        "OLCI L1 Ocean Color"      : layers['copernicus:sentinel3a_olci_oceancolor_redres_platecarre'],
+        "SLSTR L1 Nadir IR"        : layers['copernicus:sentinel3a_slstr_ir_nadir_platecarree'],
+        "SLSTR L1 Nadir Day"       : layers['copernicus:sentinel3a_slstr_nadir_day_platecarree'],
     }; 
 
     // correspondance Names shown on the map and layer names
@@ -425,7 +473,11 @@ function drawMap(info) {
         "NT Meteosat Airmass"    : 'nt:meteosat:msg_airmass',
         "NT Meteosat Natural"    : 'nt:meteosat:msg_natural',
         "NT Meteosat Dust"       : 'nt:meteosat:msg_dust',
-    }
+        "OLCI L1 RGB"            : 'copernicus:sentinel3a_olci_level1rgb_redres_platecarre',
+        "OLCI L1 Ocean Color"    : 'copernicus:sentinel3a_olci_oceancolor_redres_platecarre',
+        "SLSTR L1 Nadir IR"      : 'copernicus:sentinel3a_slstr_ir_nadir_platecarree',
+        "SLSTR L1 Nadir Day"     : 'copernicus:sentinel3a_slstr_nadir_day_platecarree',
+    };
 
     var overlayMaps = {
         "Basemap": bkgLayer,
